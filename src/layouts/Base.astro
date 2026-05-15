@@ -1,0 +1,77 @@
+---
+/**
+ * Base layout — shared <head>, font imports, grain overlay, and dark mode init script.
+ * All pages wrap their content in this layout.
+ */
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Matt Snively',
+  description = 'Developer and data journalist building civic accountability tools, analytics dashboards, and mobile apps.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!-- Playfair Display (editorial headlines) + IBM Plex Mono (technical labels) + Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Inline script runs before first paint to apply the saved theme class.
+      Without this, there is a flash of the wrong theme on reload.
+    -->
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+
+  <body
+    class="
+      bg-paper-100 dark:bg-paper-950
+      text-paper-800 dark:text-paper-200
+      font-sans antialiased
+      transition-colors duration-300
+    "
+  >
+    <!--
+      Film grain overlay — SVG fractal noise tiled at low opacity.
+      Gives the aged-paper / analog feel of the 70s retrofuturism aesthetic.
+      pointer-events:none keeps it purely decorative.
+    -->
+    <div
+      aria-hidden="true"
+      class="grain-overlay fixed inset-0 z-50 pointer-events-none opacity-[0.035]"
+      style="
+        background-image: url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\");
+        background-size: 128px 128px;
+      "
+    ></div>
+
+    <slot />
+  </body>
+</html>

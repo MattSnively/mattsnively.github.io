@@ -1,0 +1,9 @@
+{
+  "title": "Junkpile",
+  "description": "iOS app for uncluttering email — gesture-based triage with swipe-to-archive, smart undo, achievement streaks, and full VoiceOver accessibility. Built with SwiftUI and SwiftData.",
+  "status": "beta",
+  "tags": ["SwiftUI", "SwiftData", "iOS", "Gmail API"],
+  "liveUrl": null,
+  "githubUrl": null,
+  "order": 5
+}

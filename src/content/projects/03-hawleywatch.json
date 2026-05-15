@@ -1,0 +1,9 @@
+{
+  "title": "Hawley Watch",
+  "description": "Political accountability site tracking Senator Josh Hawley's public statements against his voting record and campaign finance data. Fair, sourced, and transparent.",
+  "status": "live",
+  "tags": ["Astro", "Tailwind", "MDX", "Cloudflare", "Playwright"],
+  "liveUrl": "https://hawleywatch.com",
+  "githubUrl": "https://github.com/MattSnively/Hawley_Watch",
+  "order": 3
+}

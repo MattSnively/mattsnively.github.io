@@ -1,0 +1,9 @@
+{
+  "title": "AdmissionsBuilder",
+  "description": "AI-assisted college admissions application builder. Guides students through essays, activity lists, and school research with structured coaching and progress tracking.",
+  "status": "in-progress",
+  "tags": ["FastAPI", "React", "AI", "Python"],
+  "liveUrl": null,
+  "githubUrl": null,
+  "order": 8
+}
