@@ -88,8 +88,8 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
   <!-- ─── Hero ─────────────────────────────────────────────────────────── -->
   <section
     class="
-      min-h-screen flex flex-col justify-center
-      px-6 md:px-12 pt-24 pb-16
+      flex flex-col justify-center
+      px-6 md:px-12 pt-28 pb-14
       max-w-4xl mx-auto
     "
   >
@@ -126,11 +126,12 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
         rel="noopener noreferrer"
         class="
           font-mono text-xs tracking-widest uppercase
-          border border-paper-800 dark:border-paper-200
-          text-paper-800 dark:text-paper-200
+          bg-rust dark:bg-rust-light
+          text-paper-50
+          border border-rust dark:border-rust-light
           px-5 py-2.5
-          hover:bg-paper-800 hover:text-paper-50
-          dark:hover:bg-paper-200 dark:hover:text-paper-900
+          hover:bg-rust-dark dark:hover:bg-rust
+          hover:border-rust-dark dark:hover:border-rust
           transition-colors
         "
       >
@@ -155,10 +156,10 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
   <hr class="border-paper-300 dark:border-paper-800 mx-6 md:mx-12" />
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
-  <section id="work" class="px-6 md:px-12 py-20 max-w-6xl mx-auto w-full">
+  <section id="work" class="px-6 md:px-12 py-12 max-w-6xl mx-auto w-full">
     <!-- Section header with classification-style label -->
-    <div class="flex items-baseline gap-4 mb-12">
-      <span class="font-mono text-[10px] tracking-[0.25em] uppercase text-paper-400 dark:text-paper-500">
+    <div class="flex items-baseline gap-4 mb-8">
+      <span class="font-mono text-[10px] tracking-[0.25em] uppercase text-rust dark:text-rust-light">
         PROJECTS
       </span>
       <h2 class="font-display text-3xl md:text-4xl font-bold text-paper-900 dark:text-paper-50">
@@ -170,13 +171,14 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
       Responsive grid: 1 col on mobile → 2 cols on md → 3 cols on lg.
       Cards use flex-col internally so descriptions expand and links stay at the bottom.
     -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-paper-300 dark:bg-paper-700">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {projects.map((project) => (
         <ProjectCard
           title={project.data.title}
           description={project.data.description}
           status={project.data.status}
           tags={project.data.tags}
+          image={project.data.image}
           liveUrl={project.data.liveUrl}
           githubUrl={project.data.githubUrl}
         />
@@ -187,9 +189,9 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
   <hr class="border-paper-300 dark:border-paper-800 mx-6 md:mx-12" />
 
   <!-- ─── About ─────────────────────────────────────────────────────────── -->
-  <section id="about" class="px-6 md:px-12 py-20 max-w-4xl mx-auto w-full">
-    <div class="flex items-baseline gap-4 mb-10">
-      <span class="font-mono text-[10px] tracking-[0.25em] uppercase text-paper-400 dark:text-paper-500">
+  <section id="about" class="px-6 md:px-12 py-12 max-w-4xl mx-auto w-full">
+    <div class="flex items-baseline gap-4 mb-8">
+      <span class="font-mono text-[10px] tracking-[0.25em] uppercase text-rust dark:text-rust-light">
         ABOUT
       </span>
       <h2 class="font-display text-3xl md:text-4xl font-bold text-paper-900 dark:text-paper-50">
