@@ -14,19 +14,19 @@ const { status } = Astro.props;
 const config: Record<Status, { label: string; classes: string }> = {
   live: {
     label: 'LIVE',
-    classes: 'text-moss-dark dark:text-moss-light border-moss-dark dark:border-moss-light',
+    classes: 'text-moss-dark dark:text-moss-light border-moss dark:border-moss-light bg-moss-dark/10 dark:bg-moss-light/10',
   },
   beta: {
     label: 'BETA',
-    classes: 'text-amber-dark dark:text-amber-light border-amber-dark dark:border-amber-light',
+    classes: 'text-amber-dark dark:text-amber-light border-amber dark:border-amber-light bg-amber-dark/10 dark:bg-amber-light/10',
   },
   'in-progress': {
     label: 'IN PROGRESS',
-    classes: 'text-rust dark:text-rust-light border-rust dark:border-rust-light',
+    classes: 'text-rust dark:text-rust-light border-rust dark:border-rust-light bg-rust/10 dark:bg-rust-light/10',
   },
   planning: {
     label: 'PLANNING',
-    classes: 'text-paper-500 dark:text-paper-400 border-paper-500 dark:border-paper-400',
+    classes: 'text-paper-600 dark:text-paper-400 border-paper-400 dark:border-paper-500 bg-paper-300/50 dark:bg-paper-700/30',
   },
 };
 

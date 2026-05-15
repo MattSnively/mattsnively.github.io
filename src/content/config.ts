@@ -15,6 +15,8 @@ const projects = defineCollection({
     status: z.enum(['live', 'beta', 'in-progress', 'planning']),
     /** Tech stack tags rendered in IBM Plex Mono */
     tags: z.array(z.string()),
+    /** Preview image shown at the top of the card — swap in a real screenshot when ready */
+    image: z.string().optional().nullable(),
     /** Public live URL — omit if not yet deployed */
     liveUrl: z.string().url().optional().nullable(),
     /** GitHub repository URL — omit if private or not yet created */
