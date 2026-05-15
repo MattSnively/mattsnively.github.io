@@ -4,7 +4,7 @@
   "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=CarsAndBids+Analyzer",
   "status": "live",
   "tags": ["Python", "Pandas", "Data Analysis", "Dashboard"],
-  "liveUrl": null,
+  "liveUrl": "https://mattsnively.github.io/CarsAndBidsData/",
   "githubUrl": "https://github.com/MattSnively/CarsAndBidsData",
   "order": 1
 }

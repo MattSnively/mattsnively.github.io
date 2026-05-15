@@ -4,7 +4,7 @@
   "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=Show+Me+Districts",
   "status": "live",
   "tags": ["Astro", "Svelte", "MapLibre", "Supabase", "Cloudflare"],
-  "liveUrl": null,
+  "liveUrl": "https://www.show-me-districts.com/",
   "githubUrl": "https://github.com/MattSnively/show-me-districts",
   "order": 4
 }
