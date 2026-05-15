@@ -1,0 +1,94 @@
+---
+/**
+ * ProjectCard — editorial card for a single project.
+ * Displays status badge, title, description, tech tags, and optional links.
+ * Hairline border and warm background keep the 70s paper aesthetic.
+ */
+import StatusBadge from './StatusBadge.astro';
+import type { Status } from './StatusBadge.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  status: Status;
+  tags: string[];
+  liveUrl?: string | null;
+  githubUrl?: string | null;
+}
+
+const { title, description, status, tags, liveUrl, githubUrl } = Astro.props;
+
+/** True when at least one link is present — drives the footer visibility */
+const hasLinks = liveUrl || githubUrl;
+---
+
+<article
+  class="
+    flex flex-col gap-4
+    bg-paper-50 dark:bg-paper-900
+    border border-paper-300 dark:border-paper-700
+    p-6
+    transition-colors duration-200
+    hover:border-paper-400 dark:hover:border-paper-600
+  "
+>
+  <!-- Status badge sits top-left like a mission classification stamp -->
+  <header class="flex items-start justify-between gap-2">
+    <StatusBadge status={status} />
+  </header>
+
+  <!-- Project title in Playfair Display for editorial weight -->
+  <h3 class="font-display text-xl leading-snug text-paper-800 dark:text-paper-100">
+    {title}
+  </h3>
+
+  <!-- Description — grows to fill available space, pushing links to the bottom -->
+  <p class="text-sm leading-relaxed text-paper-600 dark:text-paper-400 flex-1">
+    {description}
+  </p>
+
+  <!-- Tech stack tags in IBM Plex Mono — contrast between editorial and technical -->
+  <ul class="flex flex-wrap gap-1.5" aria-label="Tech stack">
+    {tags.map((tag) => (
+      <li class="font-mono text-[10px] tracking-wide text-paper-500 dark:text-paper-500 bg-paper-200 dark:bg-paper-800 px-2 py-0.5">
+        {tag}
+      </li>
+    ))}
+  </ul>
+
+  <!-- Links only render when URLs are actually present -->
+  {hasLinks && (
+    <footer class="flex gap-3 pt-1 border-t border-paper-200 dark:border-paper-800">
+      {liveUrl && (
+        <a
+          href={liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="
+            font-mono text-[11px] tracking-wide uppercase
+            text-rust dark:text-rust-light
+            hover:text-rust-dark dark:hover:text-rust
+            transition-colors
+          "
+        >
+          View Live ↗
+        </a>
+      )}
+      {githubUrl && (
+        <a
+          href={githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="
+            font-mono text-[11px] tracking-wide uppercase
+            text-paper-500 dark:text-paper-400
+            hover:text-paper-700 dark:hover:text-paper-200
+            transition-colors
+          "
+        >
+          GitHub ↗
+        </a>
+      )}
+    </footer>
+  )}
+</article>

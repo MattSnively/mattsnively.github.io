@@ -1,0 +1,9 @@
+{
+  "title": "Projects Dashboard",
+  "description": "Personal project management dashboard with live git integration, status tracking, drag-to-reorder cards, and 'needs attention' checklists across 14 active projects.",
+  "status": "live",
+  "tags": ["Python", "Flask", "Vanilla JS", "Tailwind", "YAML"],
+  "liveUrl": null,
+  "githubUrl": null,
+  "order": 4
+}

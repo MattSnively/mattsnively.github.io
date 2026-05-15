@@ -1,0 +1,9 @@
+{
+  "title": "NFL Fantasy Football Analysis",
+  "description": "Power BI analytics suite for fantasy football — player trends, trade value analysis, and matchup projections built on multi-season historical stats data.",
+  "status": "in-progress",
+  "tags": ["Power BI", "DAX", "Data Modeling", "Python"],
+  "liveUrl": null,
+  "githubUrl": null,
+  "order": 6
+}

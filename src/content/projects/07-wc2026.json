@@ -1,0 +1,9 @@
+{
+  "title": "WC2026 Ticket Tracker",
+  "description": "Data journalism project tracking FIFA World Cup 2026 ticket prices across official and secondary markets. A hotness score aggregates price, scarcity, and demand trends across all 16 venues.",
+  "status": "planning",
+  "tags": ["Python", "Playwright", "GitHub Pages", "Chart.js", "Leaflet"],
+  "liveUrl": null,
+  "githubUrl": null,
+  "order": 7
+}

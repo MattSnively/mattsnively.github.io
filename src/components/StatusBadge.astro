@@ -1,0 +1,47 @@
+---
+/**
+ * StatusBadge — renders a worn analog-label style badge for project status.
+ * Styled to look like a classification stamp or mission-document marking.
+ */
+export type Status = 'live' | 'beta' | 'in-progress' | 'planning';
+
+interface Props {
+  status: Status;
+}
+
+const { status } = Astro.props;
+
+const config: Record<Status, { label: string; classes: string }> = {
+  live: {
+    label: 'LIVE',
+    classes: 'text-moss-dark dark:text-moss-light border-moss-dark dark:border-moss-light',
+  },
+  beta: {
+    label: 'BETA',
+    classes: 'text-amber-dark dark:text-amber-light border-amber-dark dark:border-amber-light',
+  },
+  'in-progress': {
+    label: 'IN PROGRESS',
+    classes: 'text-rust dark:text-rust-light border-rust dark:border-rust-light',
+  },
+  planning: {
+    label: 'PLANNING',
+    classes: 'text-paper-500 dark:text-paper-400 border-paper-500 dark:border-paper-400',
+  },
+};
+
+const { label, classes } = config[status];
+---
+
+<!--
+  Border + all-caps monospace gives the "rubber stamp" look that fits
+  the 70s mission-document aesthetic without heavy background fills.
+-->
+<span
+  class:list={[
+    'font-mono text-[10px] tracking-[0.15em] border px-1.5 py-0.5 uppercase',
+    classes,
+  ]}
+>
+  {label}
+</span>
