@@ -1,7 +1,7 @@
 {
   "title": "Show Me Districts",
   "description": "Missouri congressional redistricting transparency tool with an interactive map, collaborative district editor, and fair-map comparisons. Built for nonpartisan civic engagement.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=Show+Me+Districts",
+  "image": "/images/showmedistricts.jpg",
   "status": "live",
   "tags": ["Astro", "Svelte", "MapLibre", "Supabase", "Cloudflare"],
   "liveUrl": "https://www.show-me-districts.com/",

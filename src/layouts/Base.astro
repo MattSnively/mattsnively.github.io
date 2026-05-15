@@ -59,6 +59,53 @@ const {
     "
   >
     <!--
+      Diagonal colored line layer — three pairs of lines in rust, amber, and moss,
+      running at ~22 degrees across the full viewport. The double-rule motif (a thick
+      line paired with a thinner one close by) is borrowed from 70s editorial design.
+      Fixed so the lines stay put while content scrolls over them, creating depth.
+      Light mode uses the darker palette values; dark mode uses lighter versions via CSS.
+    -->
+    <div aria-hidden="true" class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <svg
+        width="100%"
+        height="100%"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+        class="accent-lines"
+      >
+        <!-- Rust pair — upper third -->
+        <line class="line-rust-bold"  x1="0%" y1="14%" x2="100%" y2="37%" stroke-width="2.5" />
+        <line class="line-rust-thin"  x1="0%" y1="17%" x2="100%" y2="40%" stroke-width="0.75" />
+
+        <!-- Moss single — crosses through the mid-upper area -->
+        <line class="line-moss"       x1="0%" y1="31%" x2="100%" y2="51%" stroke-width="1" />
+
+        <!-- Amber pair — lower half -->
+        <line class="line-amber-bold" x1="0%" y1="63%" x2="100%" y2="80%" stroke-width="1.75" />
+        <line class="line-amber-thin" x1="0%" y1="66%" x2="100%" y2="83%" stroke-width="0.75" />
+
+        <!-- Rust accent — near the footer -->
+        <line class="line-rust-thin"  x1="0%" y1="87%" x2="100%" y2="96%" stroke-width="1" />
+      </svg>
+    </div>
+
+    <style>
+      /* Light mode line colors */
+      .line-rust-bold  { stroke: rgba(196,  82, 10, 0.22); }
+      .line-rust-thin  { stroke: rgba(196,  82, 10, 0.13); }
+      .line-amber-bold { stroke: rgba(139, 105, 20, 0.18); }
+      .line-amber-thin { stroke: rgba(139, 105, 20, 0.11); }
+      .line-moss       { stroke: rgba( 74, 124, 89, 0.15); }
+
+      /* Dark mode — shift to the lighter palette values so lines read against dark bg */
+      .dark .line-rust-bold  { stroke: rgba(224, 122, 58, 0.20); }
+      .dark .line-rust-thin  { stroke: rgba(224, 122, 58, 0.12); }
+      .dark .line-amber-bold { stroke: rgba(196, 164, 74, 0.18); }
+      .dark .line-amber-thin { stroke: rgba(196, 164, 74, 0.10); }
+      .dark .line-moss       { stroke: rgba(106, 175, 133, 0.14); }
+    </style>
+
+    <!--
       Film grain overlay — SVG fractal noise tiled at low opacity.
       Gives the aged-paper / analog feel of the 70s retrofuturism aesthetic.
       pointer-events:none keeps it purely decorative.
@@ -72,6 +119,8 @@ const {
       "
     ></div>
 
-    <slot />
+    <div class="relative z-10">
+      <slot />
+    </div>
   </body>
 </html>

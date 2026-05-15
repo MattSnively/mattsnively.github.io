@@ -1,7 +1,7 @@
 {
   "title": "CarsAndBids Analyzer",
   "description": "Interactive analytics dashboard for 31K+ Cars & Bids auction listings. Cross-filterable views across market trends, individual listings, model comparisons, and a high-level overview.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=CarsAndBids+Analyzer",
+  "image": "/images/carsandbids.jpg",
   "status": "live",
   "tags": ["Python", "Pandas", "Data Analysis", "Dashboard"],
   "liveUrl": "https://mattsnively.github.io/CarsAndBidsData/",
