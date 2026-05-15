@@ -1,7 +1,7 @@
 {
   "title": "Projects Dashboard",
   "description": "Personal project management dashboard with live git integration, status tracking, drag-to-reorder cards, and 'needs attention' checklists across 14 active projects.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=Projects+Dashboard",
+  "image": "/images/dashboard.jpg",
   "status": "live",
   "tags": ["Python", "Flask", "Vanilla JS", "Tailwind", "YAML"],
   "liveUrl": null,
