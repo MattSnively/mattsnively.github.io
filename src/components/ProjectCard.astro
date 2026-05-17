@@ -20,6 +20,40 @@ const { title, description, status, tags, image, liveUrl, githubUrl } = Astro.pr
 
 /** True when at least one link is present — drives the footer visibility */
 const hasLinks = liveUrl || githubUrl;
+
+/**
+ * Maps display tag names to Simple Icons CDN slugs.
+ * Tags absent from this map render as text-only pills.
+ * CDN URL format: cdn.simpleicons.org/{slug}/{hex-color}
+ */
+const ICON_SLUGS: Record<string, string> = {
+  'Astro':        'astro',
+  'Chart.js':     'chartdotjs',
+  'Cloudflare':   'cloudflare',
+  'FastAPI':      'fastapi',
+  'Flask':        'flask',
+  'GitHub Pages': 'github',
+  'Gmail API':    'gmail',
+  'Leaflet':      'leaflet',
+  'MDX':          'mdx',
+  'Pandas':       'pandas',
+  'Playwright':   'playwright',
+  'Power BI':     'powerbi',
+  'Python':       'python',
+  'React':        'react',
+  'Stripe':       'stripe',
+  'Supabase':     'supabase',
+  'Svelte':       'svelte',
+  'SwiftData':    'swift',
+  'SwiftUI':      'swift',
+  'Tailwind':     'tailwindcss',
+  'Vanilla JS':   'javascript',
+  'iOS':          'apple',
+};
+
+/** paper-500 (#9A8A72) for light mode; paper-300 (#D4C5A9) for dark mode */
+const ICON_COLOR_LIGHT = '9A8A72';
+const ICON_COLOR_DARK  = 'D4C5A9';
 ---
 
 <article
@@ -66,13 +100,42 @@ const hasLinks = liveUrl || githubUrl;
       {description}
     </p>
 
-    <!-- Tech stack tags in IBM Plex Mono -->
+    <!-- Tech stack tags in IBM Plex Mono; known stacks get a Simple Icons logo -->
     <ul class="flex flex-wrap gap-1.5" aria-label="Tech stack">
-      {tags.map((tag) => (
-        <li class="font-mono text-[10px] tracking-wide text-paper-500 dark:text-paper-500 bg-paper-200 dark:bg-paper-800 px-2 py-0.5">
-          {tag}
-        </li>
-      ))}
+      {tags.map((tag) => {
+        const slug = ICON_SLUGS[tag];
+        return (
+          <li class="flex items-center gap-1 font-mono text-[10px] tracking-wide text-paper-500 dark:text-paper-400 bg-paper-200 dark:bg-paper-800 px-2 py-0.5">
+            {slug && (
+              <>
+                {/* Light-mode icon — hidden when .dark is active */}
+                <img
+                  src={`https://cdn.simpleicons.org/${slug}/${ICON_COLOR_LIGHT}`}
+                  width="12"
+                  height="12"
+                  class="block dark:hidden flex-shrink-0"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  onerror="this.style.display='none'"
+                />
+                {/* Dark-mode icon — shown only when .dark is active */}
+                <img
+                  src={`https://cdn.simpleicons.org/${slug}/${ICON_COLOR_DARK}`}
+                  width="12"
+                  height="12"
+                  class="hidden dark:block flex-shrink-0"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  onerror="this.style.display='none'"
+                />
+              </>
+            )}
+            {tag}
+          </li>
+        );
+      })}
     </ul>
 
     <!-- Links only render when URLs are present -->
