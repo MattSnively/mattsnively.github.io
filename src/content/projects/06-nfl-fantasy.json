@@ -1,10 +1,10 @@
 {
-  "title": "NFL Fantasy Football Analysis",
-  "description": "Power BI analytics suite for fantasy football — player trends, trade value analysis, and matchup projections built on multi-season historical stats data.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=NFL+Fantasy+Analysis",
-  "status": "in-progress",
-  "tags": ["Power BI", "DAX", "Data Modeling", "Python"],
-  "liveUrl": null,
-  "githubUrl": null,
+  "title": "Reality Check: 2025 Projection Audit",
+  "description": "An audit of ESPN's preseason fantasy football projections against actual 2025 results — 191 players, 4 positions, 18 weeks of data revealing where the projections were systematically wrong.",
+  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=Reality+Check",
+  "status": "live",
+  "tags": ["Python", "pandas", "Data Analysis", "ESPN API"],
+  "liveUrl": "https://mattsnively.github.io/FF-RC/",
+  "githubUrl": "https://github.com/MattSnively/FF-RC",
   "order": 2
 }
