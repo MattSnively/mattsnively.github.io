@@ -15,6 +15,7 @@ const sites = [
   { filename: 'carsandbids.jpg',     url: 'https://mattsnively.github.io/CarsAndBidsData/' },
   { filename: 'showmedistricts.jpg', url: 'https://www.show-me-districts.com/' },
   { filename: 'hawleywatch.jpg',     url: 'https://hawleywatch.com' },
+  { filename: 'ffrc.jpg',            url: 'https://mattsnively.github.io/FF-RC/' },
 ];
 
 const browser = await chromium.launch();

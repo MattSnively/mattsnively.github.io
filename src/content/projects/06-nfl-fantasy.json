@@ -1,7 +1,7 @@
 {
   "title": "Reality Check: 2025 Projection Audit",
   "description": "An audit of ESPN's preseason fantasy football projections against actual 2025 results — 191 players, 4 positions, 18 weeks of data revealing where the projections were systematically wrong.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=Reality+Check",
+  "image": "/images/ffrc.jpg",
   "status": "live",
   "tags": ["Python", "pandas", "Data Analysis", "ESPN API"],
   "liveUrl": "https://mattsnively.github.io/FF-RC/",
