@@ -51,9 +51,17 @@ const dataPoints = [
       backdrop-blur-md
     "
   >
-    <!-- Monogram with a data-point dot -->
-    <a href="#top" class="font-display font-bold text-sm tracking-[0.15em] text-ink dark:text-frost">
-      MS<span class="text-cat-data dark:text-cat-data-d">.</span>
+    <!-- Wordmark: a tiny three-bar chart glyph (the site's chart motif in
+         miniature) next to the full name -->
+    <a href="#top" class="flex items-center gap-2.5 group/logo">
+      <svg viewBox="0 0 18 16" class="w-4 h-3.5" aria-hidden="true">
+        <rect x="0"  y="8" width="4" height="8" rx="1" class="logo-bar fill-cat-data dark:fill-cat-data-d" />
+        <rect x="7"  y="4" width="4" height="12" rx="1" class="logo-bar fill-cat-civic dark:fill-cat-civic-d" />
+        <rect x="14" y="0" width="4" height="16" rx="1" class="logo-bar fill-cat-play dark:fill-cat-play-d" />
+      </svg>
+      <span class="font-display font-bold text-sm tracking-wide text-ink dark:text-frost">
+        Matt Snively
+      </span>
     </a>
 
     <div class="flex items-center gap-6">
@@ -112,8 +120,10 @@ const dataPoints = [
           ))}
         </ul>
 
-        <!-- Name in a slow-panning 4-hue gradient -->
-        <h1 class="hero-name font-display text-5xl md:text-7xl font-bold leading-[1.02] mb-7">
+        <!-- Name in a slow-panning 4-hue gradient. pb-3 keeps the "y"
+             descender inside the gradient's paint box instead of being
+             cropped by the tight line box. -->
+        <h1 class="hero-name font-display text-5xl md:text-7xl font-bold leading-[1.08] pb-3 mb-6">
           Matt Snively
         </h1>
 

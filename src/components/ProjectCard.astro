@@ -233,6 +233,14 @@ const ICON_COLOR_DARK  = '82808e';
     box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--cat) 35%, transparent);
   }
 
+  /* Dark surface swallows a drop shadow, so the glow goes neon instead:
+     an all-around halo plus a stronger underglow, both in the accent. */
+  :global(.dark) .project-card:hover {
+    box-shadow:
+      0 0 22px -2px color-mix(in srgb, var(--cat) 45%, transparent),
+      0 14px 40px -8px color-mix(in srgb, var(--cat) 55%, transparent);
+  }
+
   /* Screenshot zooms slightly on hover — scoped so only the image moves */
   .card-img {
     transition: transform 0.4s ease;
