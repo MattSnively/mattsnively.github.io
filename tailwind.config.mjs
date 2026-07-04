@@ -8,52 +8,58 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Serif headlines — editorial weight
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
-        // Monospace labels and tech tags — technical-vintage contrast
-        mono: ['"IBM Plex Mono"', 'Menlo', 'monospace'],
+        // Geometric grotesque headlines — contemporary, data-forward
+        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        // Monospace labels, tags, and axis-style annotations
+        mono: ['"JetBrains Mono"', 'Menlo', 'monospace'],
         // Body copy — clean, legible
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
 
       colors: {
-        // Aged paper palette — core of the 70s editorial aesthetic
-        paper: {
-          50:  '#FFFDF8',
-          100: '#F5F0E8',
-          200: '#EDE5D8',
-          300: '#D4C5A9',
-          400: '#B8A484',
-          500: '#9A8A72',
-          600: '#7A6A52',
-          700: '#5A4A32',
-          800: '#2C1F0E',
-          900: '#1A1510',
-          950: '#0D0A08',
+        /*
+         * Neutral surfaces.
+         * "night" = dark-mode surfaces (deep blue-black, not pure gray, so the
+         * category hues glow against it); "day" = light-mode surfaces.
+         */
+        night: {
+          950: '#0b0b12', // page background (dark)
+          900: '#12121a', // chart/card surface (dark) — validated vs palette
+          800: '#1a1a26', // raised surface / tag chips (dark)
+          700: '#262636', // hairline borders (dark)
+          600: '#3a3a4e', // strong borders / hover borders (dark)
         },
-        // Rust / burnt orange — primary accent
-        rust: {
-          light: '#E07A3A',
-          DEFAULT: '#C4520A',
-          dark:  '#A33E05',
+        day: {
+          50:  '#fafaf8', // page background (light) — validated vs palette
+          100: '#f2f1ec', // raised surface / tag chips (light)
+          200: '#e6e4db', // hairline borders (light)
+          300: '#d2cfc2', // strong borders / hover borders (light)
         },
-        // Amber / gold — secondary accent
-        amber: {
-          light: '#C4A44A',
-          DEFAULT: '#8B6914',
-          dark:  '#6B5010',
-        },
-        // Moss green — "Live" status indicator
-        moss: {
-          light: '#6AAF85',
-          DEFAULT: '#4A7C59',
-          dark:  '#3A5C42',
-        },
-      },
 
-      // Hairline borders feel more editorial than chunky ones
-      borderWidth: {
-        hairline: '0.5px',
+        /* Text inks — one trio per mode */
+        ink:   { DEFAULT: '#16151d', soft: '#565360', mute: '#8b8894' }, // on light
+        frost: { DEFAULT: '#f2f2f5', soft: '#b8b6c2', mute: '#82808e' }, // on dark
+
+        /*
+         * Category accents — CVD-validated 4-hue categorical palette
+         * (run through the dataviz palette validator for both surfaces).
+         * Plain slots are the light-mode steps; "-d" slots are the dark-mode
+         * steps of the SAME hues, re-picked for the dark surface.
+         */
+        cat: {
+          data:      '#2a78d6', 'data-d':  '#3987e5', // blue    — data & analytics
+          civic:     '#4a3aa7', 'civic-d': '#9085e9', // violet  — civic tech
+          apps:      '#1baf7a', 'apps-d':  '#199e70', // aqua    — apps & tools
+          play:      '#e87ba4', 'play-d':  '#d55181', // magenta — just for fun
+        },
+
+        /* Status colors — reserved, never reused as series/category hues */
+        status: {
+          live:     '#0ca30c',
+          beta:     '#fab219',
+          progress: '#3987e5',
+          planning: '#898781',
+        },
       },
     },
   },

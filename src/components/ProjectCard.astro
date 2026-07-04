@@ -1,22 +1,38 @@
 ---
 /**
- * ProjectCard — editorial card for a single project.
- * Image preview at top, status badge, title, description, tech tags, and optional links below.
+ * ProjectCard — a category-colored card for a single project.
+ *
+ * The card's accent color comes from its category (see src/lib/categories.ts)
+ * and is applied consistently: top accent bar, category tag, "view live" link,
+ * and the hover glow. Same color everywhere = Gestalt similarity, so visitors
+ * can scan the grid and group projects by kind at a glance.
+ *
+ * Hover: the card lifts, the border and glow take the category hue, and the
+ * screenshot zooms slightly. All transitions collapse under reduced motion.
  */
 import StatusBadge from './StatusBadge.astro';
 import type { Status } from './StatusBadge.astro';
+import { CATEGORY_MAP } from '../lib/categories';
+import type { CategoryId } from '../lib/categories';
 
 interface Props {
   title: string;
   description: string;
   status: Status;
+  category: CategoryId;
   tags: string[];
   image?: string | null;
   liveUrl?: string | null;
   githubUrl?: string | null;
+  /** 0-based grid index — drives the staggered scroll-reveal delay */
+  index?: number;
 }
 
-const { title, description, status, tags, image, liveUrl, githubUrl } = Astro.props;
+const { title, description, status, category, tags, image, liveUrl, githubUrl, index = 0 } =
+  Astro.props;
+
+/** Resolve the category's accent hues (light + dark surface steps) */
+const cat = CATEGORY_MAP[category];
 
 /** True when at least one link is present — drives the footer visibility */
 const hasLinks = liveUrl || githubUrl;
@@ -37,10 +53,12 @@ const ICON_SLUGS: Record<string, string> = {
   'Leaflet':      'leaflet',
   'MDX':          'mdx',
   'Pandas':       'pandas',
+  'pandas':       'pandas',
   'Playwright':   'playwright',
   'Power BI':     'powerbi',
   'Python':       'python',
   'React':        'react',
+  'Recharts':     'recharts',
   'Stripe':       'stripe',
   'Supabase':     'supabase',
   'Svelte':       'svelte',
@@ -51,61 +69,84 @@ const ICON_SLUGS: Record<string, string> = {
   'iOS':          'apple',
 };
 
-/** paper-500 (#9A8A72) for light mode; paper-300 (#D4C5A9) for dark mode */
-const ICON_COLOR_LIGHT = '9A8A72';
-const ICON_COLOR_DARK  = 'D4C5A9';
+/** Neutral icon tints: ink-mute for light mode, frost-mute for dark mode */
+const ICON_COLOR_LIGHT = '8b8894';
+const ICON_COLOR_DARK  = '82808e';
 ---
 
+<!--
+  --cat-l / --cat-d hold both surface steps of the accent; the CSS below
+  picks whichever matches the active theme into --cat, which everything
+  (accent bar, tag, glow, links) then references.
+  data-category powers the legend filter on the index page.
+-->
 <article
-  class="
-    flex flex-col
-    bg-paper-50 dark:bg-paper-900
-    border border-paper-300 dark:border-paper-700
-    overflow-hidden
-    transition-colors duration-200
-    hover:border-paper-500 dark:hover:border-paper-500
-  "
+  class="project-card group reveal flex flex-col rounded-xl overflow-hidden
+         bg-white dark:bg-night-900
+         border border-day-200 dark:border-night-700"
+  data-category={category}
+  style={`--cat-l:${cat.light}; --cat-d:${cat.dark}; --stagger:${index % 3};`}
 >
-  <!-- Preview image — swap out the placeholder src for a real screenshot when ready -->
-  <div class="relative w-full aspect-video bg-paper-200 dark:bg-paper-800 overflow-hidden">
+  <!-- Category accent bar — the card's color signature, always visible -->
+  <div class="h-1 w-full shrink-0" style="background: var(--cat);" aria-hidden="true"></div>
+
+  <!-- Preview image with overlaid category tag + status badge -->
+  <div class="relative w-full aspect-video bg-day-100 dark:bg-night-800 overflow-hidden">
     {image ? (
       <img
         src={image}
         alt={`${title} preview`}
-        class="w-full h-full object-cover"
+        class="card-img w-full h-full object-cover"
         loading="lazy"
       />
     ) : (
-      <!-- Fallback if no image is provided yet -->
-      <div class="w-full h-full flex items-center justify-center">
-        <span class="font-mono text-xs text-paper-400 dark:text-paper-600 tracking-widest uppercase">
-          Preview
+      <!-- Fallback if no screenshot yet: category-tinted wash + big initial -->
+      <div class="card-fallback w-full h-full flex items-center justify-center">
+        <span class="font-display text-7xl font-bold select-none" aria-hidden="true">
+          {title.charAt(0)}
         </span>
       </div>
     )}
+
+    <!-- Category tag (color + text label, never color alone) -->
+    <span
+      class="absolute top-3 left-3 inline-flex items-center gap-1.5
+             font-mono text-[10px] font-medium tracking-[0.12em] uppercase
+             text-ink dark:text-frost
+             bg-day-50/85 dark:bg-night-900/85 backdrop-blur-sm
+             border border-day-200 dark:border-night-700
+             rounded-full px-2.5 py-1"
+    >
+      <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background: var(--cat);"></span>
+      {cat.label}
+    </span>
+
+    <!-- Status badge, opposite corner -->
+    <span class="absolute top-3 right-3">
+      <StatusBadge status={status} />
+    </span>
   </div>
 
   <!-- Card body -->
   <div class="flex flex-col gap-3 p-5 flex-1">
-    <!-- Status badge -->
-    <StatusBadge status={status} />
-
-    <!-- Project title in Playfair Display for editorial weight -->
-    <h3 class="font-display text-xl leading-snug text-paper-800 dark:text-paper-100">
+    <!-- Project title -->
+    <h3 class="font-display text-xl font-semibold leading-snug text-ink dark:text-frost">
       {title}
     </h3>
 
-    <!-- Description — grows to fill available space, pushing links to the bottom -->
-    <p class="text-sm leading-relaxed text-paper-600 dark:text-paper-400 flex-1">
+    <!-- Description — grows to fill available space, pushing links down -->
+    <p class="text-sm leading-relaxed text-ink-soft dark:text-frost-soft flex-1">
       {description}
     </p>
 
-    <!-- Tech stack tags in IBM Plex Mono; known stacks get a Simple Icons logo -->
+    <!-- Tech stack tags; known stacks get a Simple Icons logo -->
     <ul class="flex flex-wrap gap-1.5" aria-label="Tech stack">
       {tags.map((tag) => {
         const slug = ICON_SLUGS[tag];
         return (
-          <li class="flex items-center gap-1 font-mono text-[10px] tracking-wide text-paper-500 dark:text-paper-400 bg-paper-200 dark:bg-paper-800 px-2 py-0.5">
+          <li class="flex items-center gap-1 font-mono text-[10px] tracking-wide
+                     text-ink-soft dark:text-frost-soft
+                     bg-day-100 dark:bg-night-800 rounded px-2 py-0.5">
             {slug && (
               <>
                 {/* Light-mode icon — hidden when .dark is active */}
@@ -140,20 +181,16 @@ const ICON_COLOR_DARK  = 'D4C5A9';
 
     <!-- Links only render when URLs are present -->
     {hasLinks && (
-      <footer class="flex gap-3 pt-2 border-t border-paper-200 dark:border-paper-800">
+      <footer class="flex gap-4 pt-3 border-t border-day-200 dark:border-night-700">
         {liveUrl && (
           <a
             href={liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="
-              font-mono text-[11px] tracking-wide uppercase
-              text-rust dark:text-rust-light
-              hover:text-rust-dark dark:hover:text-rust
-              transition-colors
-            "
+            class="card-live-link font-mono text-[11px] font-medium tracking-wide uppercase
+                   inline-flex items-center gap-1"
           >
-            View Live ↗
+            View Live <span class="link-arrow" aria-hidden="true">→</span>
           </a>
         )}
         {githubUrl && (
@@ -161,12 +198,10 @@ const ICON_COLOR_DARK  = 'D4C5A9';
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="
-              font-mono text-[11px] tracking-wide uppercase
-              text-paper-500 dark:text-paper-400
-              hover:text-paper-700 dark:hover:text-paper-200
-              transition-colors
-            "
+            class="font-mono text-[11px] tracking-wide uppercase
+                   text-ink-mute dark:text-frost-mute
+                   hover:text-ink dark:hover:text-frost
+                   transition-colors"
           >
             GitHub ↗
           </a>
@@ -175,3 +210,60 @@ const ICON_COLOR_DARK  = 'D4C5A9';
     )}
   </div>
 </article>
+
+<style>
+  /* Theme indirection: --cat resolves to the light or dark step of the
+     category hue depending on the active theme class on <html>. */
+  .project-card {
+    --cat: var(--cat-l);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  :global(.dark) .project-card {
+    --cat: var(--cat-d);
+  }
+
+  /* Hover: lift + category-colored border and glow. color-mix keeps the
+     glow tied to whichever accent the theme resolved. */
+  .project-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cat);
+    box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--cat) 35%, transparent);
+  }
+
+  /* Screenshot zooms slightly on hover — scoped so only the image moves */
+  .card-img {
+    transition: transform 0.4s ease;
+  }
+  .project-card:hover .card-img {
+    transform: scale(1.045);
+  }
+
+  /* No-screenshot fallback: soft wash of the category hue behind a large
+     ghosted initial in the same hue — on-brand instead of a gray box. */
+  .card-fallback {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cat) 14%, transparent),
+      color-mix(in srgb, var(--cat) 4%, transparent)
+    );
+  }
+  .card-fallback span {
+    color: var(--cat);
+    opacity: 0.4;
+  }
+
+  /* "View Live" wears the category color; its arrow nudges right on hover */
+  .card-live-link {
+    color: var(--cat);
+  }
+  .link-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .card-live-link:hover .link-arrow {
+    transform: translateX(3px);
+  }
+</style>

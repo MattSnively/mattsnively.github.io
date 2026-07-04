@@ -3,7 +3,14 @@
   "description": "Personal project management dashboard with live git integration, status tracking, drag-to-reorder cards, and 'needs attention' checklists across 14 active projects.",
   "image": "/images/dashboard.jpg",
   "status": "live",
-  "tags": ["Python", "Flask", "Vanilla JS", "Tailwind", "YAML"],
+  "category": "apps",
+  "tags": [
+    "Python",
+    "Flask",
+    "Vanilla JS",
+    "Tailwind",
+    "YAML"
+  ],
   "liveUrl": null,
   "githubUrl": null,
   "order": 8

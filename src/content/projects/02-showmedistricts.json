@@ -3,7 +3,14 @@
   "description": "Missouri congressional redistricting transparency tool with an interactive map, collaborative district editor, and fair-map comparisons. Built for nonpartisan civic engagement.",
   "image": "/images/showmedistricts.jpg",
   "status": "live",
-  "tags": ["Astro", "Svelte", "MapLibre", "Supabase", "Cloudflare"],
+  "category": "civic",
+  "tags": [
+    "Astro",
+    "Svelte",
+    "MapLibre",
+    "Supabase",
+    "Cloudflare"
+  ],
   "liveUrl": "https://www.show-me-districts.com/",
   "githubUrl": "https://github.com/MattSnively/show-me-districts",
   "order": 4

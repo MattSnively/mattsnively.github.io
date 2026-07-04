@@ -3,7 +3,13 @@
   "description": "Interactive analytics dashboard for 31K+ Cars & Bids auction listings. Cross-filterable views across market trends, individual listings, model comparisons, and a high-level overview.",
   "image": "/images/carsandbids.jpg",
   "status": "live",
-  "tags": ["Python", "Pandas", "Data Analysis", "Dashboard"],
+  "category": "data",
+  "tags": [
+    "Python",
+    "Pandas",
+    "Data Analysis",
+    "Dashboard"
+  ],
   "liveUrl": "https://mattsnively.github.io/CarsAndBidsData/",
   "githubUrl": "https://github.com/MattSnively/CarsAndBidsData",
   "order": 1

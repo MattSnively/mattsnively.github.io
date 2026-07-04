@@ -1,9 +1,15 @@
 {
   "title": "VoteWineParty",
   "description": "Custom t-shirt drop built on a political parody premise — pick two wines and a year, get a campaign-style tee. Live design customizer with real-time preview and PNG export. Printful + Stripe integration planned.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=VoteWineParty",
+  "image": null,
   "status": "in-progress",
-  "tags": ["Vanilla JS", "Canvas API", "Printful", "Stripe"],
+  "category": "play",
+  "tags": [
+    "Vanilla JS",
+    "Canvas API",
+    "Printful",
+    "Stripe"
+  ],
   "liveUrl": null,
   "githubUrl": null,
   "order": 9

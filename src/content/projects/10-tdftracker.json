@@ -3,7 +3,13 @@
   "description": "Interactive dashboard tracking rider performance, stage results, and fantasy points for the 2026 Tour de France. Six views spanning jerseys, stage-by-stage rider breakdowns, team aggregates, and a browser-local fantasy team builder.",
   "image": "/images/tdftracker.jpg",
   "status": "live",
-  "tags": ["React", "Recharts", "Python", "Tailwind"],
+  "category": "data",
+  "tags": [
+    "React",
+    "Recharts",
+    "Python",
+    "Tailwind"
+  ],
   "liveUrl": "https://mattsnively.github.io/TDF-tracker/",
   "githubUrl": "https://github.com/MattSnively/TDF-tracker",
   "order": 6

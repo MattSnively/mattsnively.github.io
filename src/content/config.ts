@@ -13,6 +13,12 @@ const projects = defineCollection({
     description: z.string(),
     /** Controls the status badge and grid sort order */
     status: z.enum(['live', 'beta', 'in-progress', 'planning']),
+    /**
+     * Category drives the card's accent color and the legend filter.
+     * One of the ids in src/lib/categories.ts; defaults to 'data' so
+     * older entries without the field still build.
+     */
+    category: z.enum(['data', 'civic', 'apps', 'play']).default('data'),
     /** Tech stack tags rendered in IBM Plex Mono */
     tags: z.array(z.string()),
     /** Preview image shown at the top of the card — swap in a real screenshot when ready */

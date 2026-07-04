@@ -1,7 +1,9 @@
 ---
 /**
- * StatusBadge — renders a worn analog-label style badge for project status.
- * Styled to look like a classification stamp or mission-document marking.
+ * StatusBadge — a small dot + label chip showing project status.
+ * The dot carries the status color; the text label always accompanies it,
+ * so meaning is never conveyed by color alone. LIVE dots pulse gently
+ * (animation defined globally in Base.astro, disabled for reduced motion).
  */
 export type Status = 'live' | 'beta' | 'in-progress' | 'planning';
 
@@ -11,37 +13,37 @@ interface Props {
 
 const { status } = Astro.props;
 
-const config: Record<Status, { label: string; classes: string }> = {
-  live: {
-    label: 'LIVE',
-    classes: 'text-moss-dark dark:text-moss-light border-moss dark:border-moss-light bg-moss-dark/10 dark:bg-moss-light/10',
-  },
-  beta: {
-    label: 'BETA',
-    classes: 'text-amber-dark dark:text-amber-light border-amber dark:border-amber-light bg-amber-dark/10 dark:bg-amber-light/10',
-  },
-  'in-progress': {
-    label: 'IN PROGRESS',
-    classes: 'text-rust dark:text-rust-light border-rust dark:border-rust-light bg-rust/10 dark:bg-rust-light/10',
-  },
-  planning: {
-    label: 'PLANNING',
-    classes: 'text-paper-600 dark:text-paper-400 border-paper-400 dark:border-paper-500 bg-paper-300/50 dark:bg-paper-700/30',
-  },
+/**
+ * Per-status config: display label, dot color classes, and whether the
+ * dot pulses. Status hues are reserved (never reused as category accents).
+ */
+const config: Record<Status, { label: string; dot: string; pulse: boolean }> = {
+  live:          { label: 'Live',        dot: 'bg-status-live',     pulse: true },
+  beta:          { label: 'Beta',        dot: 'bg-status-beta',     pulse: false },
+  'in-progress': { label: 'In Progress', dot: 'bg-status-progress', pulse: false },
+  planning:      { label: 'Planning',    dot: 'bg-status-planning', pulse: false },
 };
 
-const { label, classes } = config[status];
+const { label, dot, pulse } = config[status];
 ---
 
 <!--
-  Border + all-caps monospace gives the "rubber stamp" look that fits
-  the 70s mission-document aesthetic without heavy background fills.
+  Frosted chip so the badge stays readable when overlaid on card images.
+  backdrop-blur + translucent surface works on both light and dark shots.
 -->
 <span
-  class:list={[
-    'font-mono text-[10px] tracking-[0.15em] border px-1.5 py-0.5 uppercase',
-    classes,
-  ]}
+  class="
+    inline-flex items-center gap-1.5
+    font-mono text-[10px] font-medium tracking-[0.12em] uppercase
+    text-ink dark:text-frost
+    bg-day-50/85 dark:bg-night-900/85 backdrop-blur-sm
+    border border-day-200 dark:border-night-700
+    rounded-full px-2.5 py-1
+  "
 >
+  <span
+    class:list={['w-1.5 h-1.5 rounded-full shrink-0', dot]}
+    style={pulse ? 'animation: pulse-ring 2.4s ease-out infinite;' : undefined}
+  ></span>
   {label}
 </span>

@@ -1,14 +1,36 @@
 ---
 /**
- * Portfolio home page — single-page layout with Hero, Projects grid, About, and Footer.
- * Projects are driven by the content collection so adding a new one is a JSON file drop.
+ * Portfolio home page — Nav, animated Hero (self-drawing chart), count-up
+ * Stats strip, filterable Projects grid, About, and a Footer whose divider
+ * is a stacked bar chart of the portfolio itself.
+ *
+ * Projects are driven by the content collection so adding a new one is a
+ * JSON file drop. Category hues come from src/lib/categories.ts and are
+ * used identically everywhere (Gestalt similarity).
  */
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
+import { CATEGORIES } from '../lib/categories';
 
 const allProjects = await getCollection('projects');
 const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
+
+/** Per-category project counts — shown on the filter chips and used as the
+ *  segment widths of the footer's stacked-bar divider. */
+const counts = Object.fromEntries(
+  CATEGORIES.map((c) => [c.id, projects.filter((p) => p.data.category === c.id).length]),
+);
+const total = projects.length;
+
+/** Headline stats for the count-up strip. Numbers are real figures pulled
+ *  from the projects themselves; `suffix` renders after the animated value. */
+const stats = [
+  { value: total, suffix: '',    label: 'Projects shipped & counting', hueL: '#2a78d6', hueD: '#3987e5' },
+  { value: 31,    suffix: 'K+',  label: 'Auction listings analyzed',   hueL: '#1baf7a', hueD: '#199e70' },
+  { value: 191,   suffix: '',    label: 'Player projections audited',  hueL: '#4a3aa7', hueD: '#9085e9' },
+  { value: 184,   suffix: '',    label: 'Tour de France riders tracked', hueL: '#e87ba4', hueD: '#d55181' },
+];
 ---
 
 <Base>
@@ -18,67 +40,42 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
       fixed top-0 inset-x-0 z-40
       flex items-center justify-between
       px-6 md:px-12 py-4
-      border-b border-paper-300 dark:border-paper-800
-      bg-paper-100/90 dark:bg-paper-950/90
-      backdrop-blur-sm
+      border-b border-day-200 dark:border-night-700
+      bg-day-50/85 dark:bg-night-950/85
+      backdrop-blur-md
     "
   >
-    <!-- Monogram -->
-    <span class="font-mono text-sm tracking-[0.2em] text-paper-600 dark:text-paper-400">
-      MS
-    </span>
+    <!-- Monogram with a data-point dot -->
+    <a href="#top" class="font-display font-bold text-sm tracking-[0.15em] text-ink dark:text-frost">
+      MS<span class="text-cat-data dark:text-cat-data-d">.</span>
+    </a>
 
     <div class="flex items-center gap-6">
-      <!-- In-page anchor links -->
-      <a
-        href="#work"
-        class="font-mono text-xs tracking-widest uppercase text-paper-500 dark:text-paper-400 hover:text-paper-800 dark:hover:text-paper-100 transition-colors"
-      >
-        Work
-      </a>
-      <a
-        href="#about"
-        class="font-mono text-xs tracking-widest uppercase text-paper-500 dark:text-paper-400 hover:text-paper-800 dark:hover:text-paper-100 transition-colors"
-      >
-        About
-      </a>
+      <!-- In-page anchor links with animated underlines -->
+      <a href="#work" class="nav-link font-mono text-xs tracking-widest uppercase">Work</a>
+      <a href="#about" class="nav-link font-mono text-xs tracking-widest uppercase">About</a>
 
       <!-- Dark / light toggle -->
       <button
         id="theme-toggle"
         aria-label="Toggle dark mode"
         class="
-          w-8 h-8 flex items-center justify-center
-          text-paper-500 dark:text-paper-400
-          hover:text-paper-800 dark:hover:text-paper-100
+          w-8 h-8 flex items-center justify-center rounded-full
+          text-ink-mute dark:text-frost-mute
+          hover:text-ink dark:hover:text-frost
+          hover:bg-day-100 dark:hover:bg-night-800
           transition-colors
         "
       >
         <!-- Sun icon (shown in dark mode) -->
-        <svg
-          id="icon-sun"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          class="w-4 h-4 hidden dark:block"
-          aria-hidden="true"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" class="w-4 h-4 hidden dark:block" aria-hidden="true">
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
         </svg>
         <!-- Moon icon (shown in light mode) -->
-        <svg
-          id="icon-moon"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          class="w-4 h-4 block dark:hidden"
-          aria-hidden="true"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" class="w-4 h-4 block dark:hidden" aria-hidden="true">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
       </button>
@@ -86,157 +83,577 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
   </nav>
 
   <!-- ─── Hero ─────────────────────────────────────────────────────────── -->
-  <section
-    class="
-      flex flex-col justify-center
-      px-6 md:px-12 pt-28 pb-14
-      max-w-4xl mx-auto
-    "
-  >
-    <!-- Classification-stamp label above the name -->
-    <p class="font-mono text-xs tracking-[0.25em] uppercase text-rust dark:text-rust-light mb-6">
-      Data Viz Consultant · Software Developer · Data Journalist 
-    </p>
+  <section id="top" class="px-6 md:px-12 pt-32 pb-10 max-w-6xl mx-auto w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-14 items-center">
+      <!-- Left: intro copy -->
+      <div>
+        <!-- Role chips — each role wears one of the category hues -->
+        <ul class="flex flex-wrap gap-2 mb-7" aria-label="Roles">
+          {[
+            { text: 'Data Viz Consultant', hueL: '#2a78d6', hueD: '#3987e5' },
+            { text: 'Software Developer',  hueL: '#1baf7a', hueD: '#199e70' },
+            { text: 'Data Journalist',     hueL: '#e87ba4', hueD: '#d55181' },
+          ].map((role) => (
+            <li
+              class="role-chip inline-flex items-center gap-1.5 font-mono text-[11px] tracking-wide uppercase
+                     text-ink-soft dark:text-frost-soft
+                     border border-day-200 dark:border-night-700 rounded-full px-3 py-1"
+              style={`--hue-l:${role.hueL}; --hue-d:${role.hueD};`}
+            >
+              <span class="w-1.5 h-1.5 rounded-full role-dot" aria-hidden="true"></span>
+              {role.text}
+            </li>
+          ))}
+        </ul>
 
-    <h1
-      class="
-        font-display text-5xl md:text-7xl font-black leading-[1.05]
-        text-paper-900 dark:text-paper-50
-        mb-8
-      "
-    >
-      Matt Snively
-    </h1>
+        <!-- Name in a slow-panning 4-hue gradient -->
+        <h1 class="hero-name font-display text-5xl md:text-7xl font-bold leading-[1.02] mb-7">
+          Matt Snively
+        </h1>
 
-    <p
-      class="
-        text-lg md:text-xl leading-relaxed
-        text-paper-600 dark:text-paper-400
-        max-w-xl mb-10
-      "
-    >
-      I turn unstructured data into actionable business insights for my day job, and in my spare time I noodle on various projects that pique my interests: sports, politics, cars, education... if inspiration strikes, there's an "in-progress" project that follows.
-    </p>
+        <p class="text-lg md:text-xl leading-relaxed text-ink-soft dark:text-frost-soft max-w-xl mb-9">
+          I turn unstructured data into actionable business insights for my day job, and in my
+          spare time I noodle on various projects that pique my interests: sports, politics, cars,
+          education... if inspiration strikes, there's an "in-progress" project that follows.
+        </p>
 
-    <div class="flex flex-wrap gap-4">
-      <a
-        href="https://github.com/MattSnively"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="
-          font-mono text-xs tracking-widest uppercase
-          bg-rust dark:bg-rust-light
-          text-paper-50
-          border border-rust dark:border-rust-light
-          px-5 py-2.5
-          hover:bg-rust-dark dark:hover:bg-rust
-          hover:border-rust-dark dark:hover:border-rust
-          transition-colors
-        "
-      >
-        GitHub ↗
-      </a>
-      <a
-        href="mailto:mattsnively@gmail.com"
-        class="
-          font-mono text-xs tracking-widest uppercase
-          text-paper-500 dark:text-paper-400
-          px-5 py-2.5
-          hover:text-paper-800 dark:hover:text-paper-100
-          transition-colors
-        "
-      >
-        Contact →
-      </a>
+        <div class="flex flex-wrap gap-3">
+          <a
+            href="https://github.com/MattSnively"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hero-cta font-mono text-xs font-medium tracking-widest uppercase
+                   text-white rounded-lg px-6 py-3"
+          >
+            GitHub ↗
+          </a>
+          <a
+            href="mailto:mattsnively@gmail.com"
+            class="font-mono text-xs tracking-widest uppercase rounded-lg px-6 py-3
+                   text-ink-soft dark:text-frost-soft
+                   border border-day-200 dark:border-night-700
+                   hover:border-day-300 dark:hover:border-night-600
+                   hover:text-ink dark:hover:text-frost
+                   transition-colors"
+          >
+            Contact →
+          </a>
+        </div>
+      </div>
+
+      <!--
+        Right: decorative animated chart. Two lines draw themselves in,
+        bars grow from the baseline, scatter dots pop and float — a living
+        dashboard sitting directly on the page's graph-paper grid.
+        Purely decorative, so it's hidden from assistive tech.
+      -->
+      <div class="hidden md:block" aria-hidden="true">
+        <svg viewBox="0 0 480 320" class="w-full h-auto hero-chart" fill="none">
+          <!-- Faint horizontal reference rules -->
+          <line x1="0" y1="80"  x2="480" y2="80"  class="chart-grid" />
+          <line x1="0" y1="160" x2="480" y2="160" class="chart-grid" />
+          <line x1="0" y1="240" x2="480" y2="240" class="chart-grid" />
+          <!-- Baseline -->
+          <line x1="0" y1="300" x2="480" y2="300" class="chart-axis" />
+
+          <!-- Aqua bars, growing from the baseline (staggered) -->
+          {[
+            { x: 24,  h: 60 }, { x: 88,  h: 96 }, { x: 152, h: 74 },
+            { x: 216, h: 128 }, { x: 280, h: 102 }, { x: 344, h: 150 }, { x: 408, h: 122 },
+          ].map((bar, i) => (
+            <rect
+              x={bar.x} y={300 - bar.h} width="34" height={bar.h} rx="4"
+              class="chart-bar"
+              style={`animation-delay: ${0.25 + i * 0.12}s;`}
+            />
+          ))}
+
+          <!-- Blue series line, self-drawing -->
+          <path
+            d="M0 258 C 50 244, 80 262, 120 226 S 190 178, 235 190 S 310 118, 355 128 S 440 84, 480 72"
+            class="chart-line line-blue"
+            pathLength="1"
+          />
+          <!-- Violet series line, self-drawing (later) -->
+          <path
+            d="M0 286 C 60 280, 95 250, 140 252 S 230 226, 270 204 S 360 186, 400 158 S 460 140, 480 128"
+            class="chart-line line-violet"
+            pathLength="1"
+          />
+
+          <!-- Magenta scatter dots — pop in, then drift. Each dot wears a
+               2px surface-colored ring so it reads over bars and lines. -->
+          {[
+            { cx: 70,  cy: 210, d: 1.6 }, { cx: 150, cy: 168, d: 1.75 },
+            { cx: 235, cy: 140, d: 1.9 }, { cx: 300, cy: 172, d: 2.05 },
+            { cx: 370, cy: 96,  d: 2.2 }, { cx: 440, cy: 120, d: 2.35 },
+          ].map((dot, i) => (
+            <circle
+              cx={dot.cx} cy={dot.cy} r="6"
+              class="chart-dot"
+              style={`animation-delay: ${dot.d}s, ${dot.d + 0.5}s; --float-dur: ${4.5 + i * 0.6}s;`}
+            />
+          ))}
+
+          <!-- Annotation chip fades in last — a little tooltip wink -->
+          <g class="chart-note" style="animation-delay: 2.6s;">
+            <rect x="386" y="34" width="64" height="24" rx="6" class="note-box" />
+            <text x="418" y="50" text-anchor="middle" class="note-text font-mono">▲ 12%</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ─── Stats strip — count-up numbers with growing underlines ──────── -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-16">
+      {stats.map((stat, i) => (
+        <div
+          class="stat-tile reveal rounded-xl p-5
+                 bg-white dark:bg-night-900
+                 border border-day-200 dark:border-night-700"
+          style={`--hue-l:${stat.hueL}; --hue-d:${stat.hueD}; --stagger:${i};`}
+        >
+          <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
+            <span class="count-up" data-target={stat.value}>0</span>{stat.suffix}
+          </p>
+          <!-- Colored underline grows in with the reveal -->
+          <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
+          <p class="text-xs font-mono tracking-wide uppercase text-ink-mute dark:text-frost-mute">
+            {stat.label}
+          </p>
+        </div>
+      ))}
     </div>
   </section>
 
-  <!-- Horizontal rule — editorial section divider -->
-  <hr class="border-paper-300 dark:border-paper-800 mx-6 md:mx-12" />
-
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
-  <section id="work" class="px-6 md:px-12 py-12 max-w-6xl mx-auto w-full">
-    <!-- Section header with classification-style label -->
-    <div class="flex items-baseline gap-4 mb-8">
-      <span class="font-mono text-[10px] tracking-[0.25em] uppercase text-rust dark:text-rust-light">
-        PROJECTS
-      </span>
-      <h2 class="font-display text-3xl md:text-4xl font-bold text-paper-900 dark:text-paper-50">
-        Work
-      </h2>
+  <section id="work" class="px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">
+    <!-- Section header: axis-style index label + heading + gradient rule -->
+    <div class="reveal mb-8">
+      <p class="font-mono text-[11px] tracking-[0.25em] uppercase text-ink-mute dark:text-frost-mute mb-2">
+        01 / Work
+      </p>
+      <div class="flex items-center gap-5">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost">
+          Projects
+        </h2>
+        <span class="section-rule flex-1 h-px" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <!--
+      Legend-as-filter: styled like a chart legend, wired as a filter.
+      Clicking a category shows only that category's cards; counts on each
+      chip are real. Without JS every card simply stays visible.
+    -->
+    <div class="reveal flex flex-wrap gap-2 mb-10" role="group" aria-label="Filter projects by category">
+      <button
+        type="button"
+        class="filter-chip font-mono text-[11px] tracking-wide uppercase rounded-full px-3.5 py-1.5"
+        data-filter="all"
+        aria-pressed="true"
+      >
+        All <span class="chip-count">{total}</span>
+      </button>
+      {CATEGORIES.map((c) => (
+        <button
+          type="button"
+          class="filter-chip font-mono text-[11px] tracking-wide uppercase rounded-full px-3.5 py-1.5
+                 inline-flex items-center gap-1.5"
+          data-filter={c.id}
+          aria-pressed="false"
+          style={`--hue-l:${c.light}; --hue-d:${c.dark};`}
+        >
+          <span class="w-1.5 h-1.5 rounded-full chip-dot" aria-hidden="true"></span>
+          {c.label} <span class="chip-count">{counts[c.id]}</span>
+        </button>
+      ))}
     </div>
 
     <!--
       Responsive grid: 1 col on mobile → 2 cols on md → 3 cols on lg.
-      Cards use flex-col internally so descriptions expand and links stay at the bottom.
+      Cards stagger in as the grid scrolls into view.
     -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projects.map((project) => (
+    <div id="project-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {projects.map((project, i) => (
         <ProjectCard
           title={project.data.title}
           description={project.data.description}
           status={project.data.status}
+          category={project.data.category}
           tags={project.data.tags}
           image={project.data.image}
           liveUrl={project.data.liveUrl}
           githubUrl={project.data.githubUrl}
+          index={i}
         />
       ))}
     </div>
   </section>
 
-  <hr class="border-paper-300 dark:border-paper-800 mx-6 md:mx-12" />
-
   <!-- ─── About ─────────────────────────────────────────────────────────── -->
-  <section id="about" class="px-6 md:px-12 py-12 max-w-4xl mx-auto w-full">
-    <div class="flex items-baseline gap-4 mb-8">
-      <span class="font-mono text-[10px] tracking-[0.25em] uppercase text-rust dark:text-rust-light">
-        ABOUT
-      </span>
-      <h2 class="font-display text-3xl md:text-4xl font-bold text-paper-900 dark:text-paper-50">
-        Background
-      </h2>
+  <section id="about" class="px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">
+    <div class="reveal mb-8">
+      <p class="font-mono text-[11px] tracking-[0.25em] uppercase text-ink-mute dark:text-frost-mute mb-2">
+        02 / About
+      </p>
+      <div class="flex items-center gap-5">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost">
+          Background
+        </h2>
+        <span class="section-rule flex-1 h-px" aria-hidden="true"></span>
+      </div>
     </div>
 
-    <div class="space-y-5 text-paper-600 dark:text-paper-400 leading-relaxed max-w-2xl">
-      <p>
-        I'm a developer and data journalist based in Missouri. I build public-interest tools
-        at the intersection of civic technology, data analysis, and software engineering —
-        from redistricting transparency sites to political accountability trackers to iOS apps.
-      </p>
-      <p>
-        I believe good software should be fair, open, and legible to the people it serves.
-        The work here is a mix of production products, ongoing research, and experiments
-        that scratch my own itch.
-      </p>
+    <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10">
+      <!-- Bio copy with category-colored phrase highlights -->
+      <div class="reveal space-y-5 text-ink-soft dark:text-frost-soft leading-relaxed max-w-2xl">
+        <p>
+          I'm a developer and data journalist based in Missouri. I build public-interest tools at
+          the intersection of <span class="hl hl-civic">civic technology</span>,
+          <span class="hl hl-data">data analysis</span>, and
+          <span class="hl hl-apps">software engineering</span> — from redistricting transparency
+          sites to political accountability trackers to iOS apps.
+        </p>
+        <p>
+          I believe good software should be fair, open, and legible to the people it serves. The
+          work here is a mix of production products, ongoing research, and
+          <span class="hl hl-play">experiments that scratch my own itch</span>.
+        </p>
+      </div>
+
+      <!-- Toolbox: three tight columns (Gestalt proximity — grouped = related) -->
+      <div class="reveal grid grid-cols-3 gap-6" style="--stagger: 1;">
+        {[
+          { heading: 'Analyze', hueL: '#2a78d6', hueD: '#3987e5', items: ['Python', 'Pandas', 'SQL', 'Tableau'] },
+          { heading: 'Build',   hueL: '#1baf7a', hueD: '#199e70', items: ['React', 'Astro', 'Swift', 'FastAPI'] },
+          { heading: 'Ship',    hueL: '#e87ba4', hueD: '#d55181', items: ['GitHub Actions', 'Cloudflare', 'Docker', 'Playwright'] },
+        ].map((col) => (
+          <div class="toolbox-col" style={`--hue-l:${col.hueL}; --hue-d:${col.hueD};`}>
+            <h3 class="font-mono text-[11px] font-medium tracking-[0.2em] uppercase mb-3 toolbox-heading">
+              {col.heading}
+            </h3>
+            <ul class="space-y-2">
+              {col.items.map((item) => (
+                <li class="flex items-center gap-2 text-sm text-ink-soft dark:text-frost-soft">
+                  <span class="w-1 h-1 rounded-full toolbox-dot shrink-0" aria-hidden="true"></span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 
   <!-- ─── Footer ────────────────────────────────────────────────────────── -->
-  <footer
-    class="
-      border-t border-paper-300 dark:border-paper-800
-      px-6 md:px-12 py-8
-      flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4
-    "
-  >
-    <p class="font-mono text-xs tracking-wide text-paper-400 dark:text-paper-500">
-      © 2026 Matt Snively
-    </p>
-    <a
-      href="mailto:mattsnively@gmail.com"
-      class="font-mono text-xs tracking-wide text-paper-500 dark:text-paper-400 hover:text-rust dark:hover:text-rust-light transition-colors"
-    >
-      mattsnively@gmail.com
-    </a>
+  <footer class="px-6 md:px-12 pb-10 pt-4 max-w-6xl mx-auto w-full">
+    <!--
+      The divider IS a chart: a 100% stacked bar of the portfolio by
+      category, using the same hues as everywhere else. Hover it for the
+      breakdown; a visually-hidden caption spells it out for screen readers.
+    -->
+    <figure class="mb-8">
+      <div
+        class="flex h-1.5 rounded-full overflow-hidden gap-0.5"
+        title={CATEGORIES.map((c) => `${c.label}: ${counts[c.id]}`).join(' · ')}
+      >
+        {CATEGORIES.map((c) => (
+          <span
+            class="footer-seg h-full"
+            style={`--hue-l:${c.light}; --hue-d:${c.dark}; width:${(counts[c.id] / total) * 100}%;`}
+          ></span>
+        ))}
+      </div>
+      <figcaption class="sr-only">
+        Portfolio by category: {CATEGORIES.map((c) => `${c.label} ${counts[c.id]}`).join(', ')}
+      </figcaption>
+    </figure>
+
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <p class="font-mono text-xs tracking-wide text-ink-mute dark:text-frost-mute">
+        © 2026 Matt Snively · Built with Astro
+      </p>
+      <a
+        href="mailto:mattsnively@gmail.com"
+        class="font-mono text-xs tracking-wide text-ink-soft dark:text-frost-soft
+               hover:text-cat-data dark:hover:text-cat-data-d transition-colors"
+      >
+        mattsnively@gmail.com
+      </a>
+    </div>
   </footer>
 </Base>
 
-<!-- Theme toggle — reads/writes localStorage and flips the `dark` class on <html> -->
+<style>
+  /* ── Nav links: underline slides in from the left on hover ─────────── */
+  .nav-link {
+    position: relative;
+    color: theme('colors.ink.mute');
+    transition: color 0.2s ease;
+  }
+  :global(.dark) .nav-link {
+    color: theme('colors.frost.mute');
+  }
+  .nav-link:hover {
+    color: theme('colors.ink.DEFAULT');
+  }
+  :global(.dark) .nav-link:hover {
+    color: theme('colors.frost.DEFAULT');
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 1.5px;
+    background: linear-gradient(90deg, #2a78d6, #e87ba4);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* ── Theme-resolved accent: --hue picks the right surface step ─────── */
+  .role-chip, .stat-tile, .filter-chip, .toolbox-col, .footer-seg {
+    --hue: var(--hue-l);
+  }
+  :global(.dark) .role-chip,
+  :global(.dark) .stat-tile,
+  :global(.dark) .filter-chip,
+  :global(.dark) .toolbox-col,
+  :global(.dark) .footer-seg {
+    --hue: var(--hue-d);
+  }
+  .role-dot, .chip-dot, .toolbox-dot { background: var(--hue); }
+  .toolbox-heading { color: var(--hue); }
+  .footer-seg { background: var(--hue); }
+
+  /* ── Hero name gradient: 4 palette hues panning slowly ─────────────── */
+  .hero-name {
+    background: linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-pan 9s ease-in-out infinite;
+  }
+  :global(.dark) .hero-name {
+    background-image: linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* ── Primary CTA: gradient fill, lifts on hover ────────────────────── */
+  .hero-cta {
+    background: linear-gradient(120deg, #2a78d6, #4a3aa7);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(42, 120, 214, 0.5);
+  }
+
+  /* ── Hero chart internals ──────────────────────────────────────────── */
+  .chart-grid { stroke: rgba(22, 21, 29, 0.07); stroke-width: 1; }
+  .chart-axis { stroke: rgba(22, 21, 29, 0.18); stroke-width: 1.5; }
+  :global(.dark) .chart-grid { stroke: rgba(242, 242, 245, 0.07); }
+  :global(.dark) .chart-axis { stroke: rgba(242, 242, 245, 0.2); }
+
+  /* Bars grow from their own bottom edge (fill-box makes origin per-bar) */
+  .chart-bar {
+    fill: #1baf7a;
+    opacity: 0.55;
+    transform-box: fill-box;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: grow-bar 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  :global(.dark) .chart-bar { fill: #199e70; opacity: 0.6; }
+
+  /* Lines draw in via pathLength=1 + dash animation */
+  .chart-line {
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-line 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .line-blue   { stroke: #2a78d6; animation-delay: 0.5s; }
+  .line-violet { stroke: #4a3aa7; animation-delay: 1s; }
+  :global(.dark) .line-blue   { stroke: #3987e5; }
+  :global(.dark) .line-violet { stroke: #9085e9; }
+
+  /* Dots pop (transform) then float forever (translate — no conflict) */
+  .chart-dot {
+    fill: #e87ba4;
+    stroke: #fafaf8;               /* 2px surface ring per mark spec */
+    stroke-width: 2;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+    animation:
+      pop-dot 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+      float-dot var(--float-dur, 5s) ease-in-out infinite;
+  }
+  :global(.dark) .chart-dot { fill: #d55181; stroke: #0b0b12; }
+
+  /* Annotation chip: hidden until its late fade-in */
+  .chart-note {
+    opacity: 0;
+    animation: fade-in 0.6s ease forwards;
+  }
+  .note-box {
+    fill: #ffffff;
+    stroke: rgba(22, 21, 29, 0.12);
+  }
+  .note-text {
+    fill: #006300;
+    font-size: 11px;
+  }
+  :global(.dark) .note-box { fill: #1a1a26; stroke: rgba(242, 242, 245, 0.12); }
+  :global(.dark) .note-text { fill: #0ca30c; }
+
+  /* ── Stat tiles: colored rule grows when the tile reveals ──────────── */
+  .stat-rule {
+    background: var(--hue);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+  }
+  .stat-tile.in .stat-rule {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stat-rule { transform: scaleX(1); }
+  }
+
+  /* ── Section rules: hairline gradient fading out to the right ─────── */
+  .section-rule {
+    background: linear-gradient(90deg, rgba(42, 120, 214, 0.45), rgba(232, 123, 164, 0.25), transparent);
+  }
+
+  /* ── Filter chips (the legend) ─────────────────────────────────────── */
+  .filter-chip {
+    color: theme('colors.ink.soft');
+    border: 1px solid theme('colors.day.200');
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  }
+  :global(.dark) .filter-chip {
+    color: theme('colors.frost.soft');
+    border-color: theme('colors.night.700');
+  }
+  .filter-chip:hover {
+    border-color: var(--hue, theme('colors.day.300'));
+    color: theme('colors.ink.DEFAULT');
+  }
+  :global(.dark) .filter-chip:hover {
+    color: theme('colors.frost.DEFAULT');
+  }
+  /* Selected chip: tinted wash of its own hue + solid hue border */
+  .filter-chip[aria-pressed='true'] {
+    border-color: var(--hue, theme('colors.ink.DEFAULT'));
+    color: theme('colors.ink.DEFAULT');
+    background: color-mix(in srgb, var(--hue, #8b8894) 12%, transparent);
+  }
+  :global(.dark) .filter-chip[aria-pressed='true'] {
+    color: theme('colors.frost.DEFAULT');
+  }
+  .chip-count {
+    opacity: 0.55;
+    margin-left: 2px;
+  }
+
+  /* ── About: phrase highlights — thick colored underlines ───────────── */
+  .hl {
+    font-weight: 500;
+    color: inherit;
+    box-shadow: inset 0 -0.45em 0 var(--hl);
+  }
+  .hl-data  { --hl: rgba(42, 120, 214, 0.22); }
+  .hl-civic { --hl: rgba(74, 58, 167, 0.2); }
+  .hl-apps  { --hl: rgba(27, 175, 122, 0.24); }
+  .hl-play  { --hl: rgba(232, 123, 164, 0.28); }
+  :global(.dark) .hl-data  { --hl: rgba(57, 135, 229, 0.3); }
+  :global(.dark) .hl-civic { --hl: rgba(144, 133, 233, 0.28); }
+  :global(.dark) .hl-apps  { --hl: rgba(25, 158, 112, 0.32); }
+  :global(.dark) .hl-play  { --hl: rgba(213, 81, 129, 0.32); }
+</style>
+
+<!-- Theme toggle — reads/writes localStorage and flips the `dark` class -->
 <script>
   const btn = document.getElementById('theme-toggle');
   btn?.addEventListener('click', () => {
     const isDark = document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+</script>
+
+<!--
+  Count-up animation — each .count-up span animates 0 → data-target the
+  first time its stat strip scrolls into view. Reduced-motion visitors
+  (and no-JS visitors, via the observer never firing... so set a fallback)
+  get the final value immediately.
+-->
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const counters = document.querySelectorAll<HTMLElement>('.count-up');
+
+  /** Animate one counter from 0 to its target over ~1.2s with ease-out */
+  function runCounter(el: HTMLElement) {
+    const target = Number(el.dataset.target ?? '0');
+    if (reduceMotion || !Number.isFinite(target)) {
+      el.textContent = target.toLocaleString();
+      return;
+    }
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now: number) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
+      el.textContent = Math.round(target * eased).toLocaleString();
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const countObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          runCounter(entry.target as HTMLElement);
+          countObserver.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.4 },
+  );
+  counters.forEach((el) => countObserver.observe(el));
+</script>
+
+<!--
+  Legend filter — clicking a chip shows only that category's cards.
+  aria-pressed tracks the active chip; "All" restores everything.
+-->
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
+  const cards = document.querySelectorAll<HTMLElement>('#project-grid [data-category]');
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const filter = chip.dataset.filter;
+      // Exactly one chip is pressed at a time
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      // Show matching cards, hide the rest
+      cards.forEach((card) => {
+        const show = filter === 'all' || card.dataset.category === filter;
+        card.classList.toggle('hidden', !show);
+      });
+    });
   });
 </script>
