@@ -16,6 +16,7 @@ const sites = [
   { filename: 'showmedistricts.jpg', url: 'https://www.show-me-districts.com/' },
   { filename: 'hawleywatch.jpg',     url: 'https://hawleywatch.com' },
   { filename: 'ffrc.jpg',            url: 'https://mattsnively.github.io/FF-RC/' },
+  { filename: 'tdftracker.jpg',      url: 'https://mattsnively.github.io/TDF-tracker/' },
 ];
 
 const browser = await chromium.launch();

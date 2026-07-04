@@ -1,9 +1,9 @@
 {
   "title": "AdmissionsBuilder",
-  "description": "AI-assisted college admissions application builder. Guides students through essays, activity lists, and school research with structured coaching and progress tracking.",
-  "image": "https://placehold.co/800x450/EDE5D8/7A6A52?text=AdmissionsBuilder",
-  "status": "in-progress",
-  "tags": ["FastAPI", "React", "AI", "Python"],
+  "description": "Admissions management platform for private schools — KPI dashboards, applicant pipeline tracking, and holistic class-building tools for admissions directors and officers. Replaces a legacy Power BI workflow with a purpose-built React + FastAPI app.",
+  "image": "/images/admissionsbuilder.jpg",
+  "status": "beta",
+  "tags": ["FastAPI", "React", "Python", "Pandas"],
   "liveUrl": null,
   "githubUrl": null,
   "order": 3
