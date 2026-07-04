@@ -120,10 +120,11 @@ const dataPoints = [
           ))}
         </ul>
 
-        <!-- Name in a slow-panning 4-hue gradient. pb-3 keeps the "y"
-             descender inside the gradient's paint box instead of being
-             cropped by the tight line box. -->
-        <h1 class="hero-name font-display text-5xl md:text-7xl font-bold leading-[1.08] pb-3 mb-6">
+        <!-- Name in a slow-panning 3-hue gradient (.gradient-ink is shared
+             with the featured stat's number). pb-3 keeps the "y" descender
+             inside the gradient's paint box instead of being cropped by the
+             tight line box. -->
+        <h1 class="gradient-ink font-display text-5xl md:text-7xl font-bold leading-[1.08] pb-3 mb-6">
           Matt Snively
         </h1>
 
@@ -228,7 +229,9 @@ const dataPoints = [
         <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
           Shipped
         </p>
-        <p class="font-display text-4xl md:text-5xl font-bold text-ink dark:text-frost tabular-nums">
+        <!-- The headline number wears the same panning gradient as the
+             hero name — the two "full measures" on the page share a look -->
+        <p class="gradient-ink font-display text-4xl md:text-5xl font-bold tabular-nums">
           <span class="count-up" data-target={headlineStat.value}>0</span>{headlineStat.suffix}
         </p>
         <!-- Colored underline grows in with the reveal -->
@@ -462,8 +465,10 @@ const dataPoints = [
   .toolbox-heading { color: var(--hue); }
   .footer-seg { background: var(--hue); }
 
-  /* ── Hero name gradient: 4 palette hues panning slowly ─────────────── */
-  .hero-name {
+  /* ── Gradient ink: the signature panning gradient ───────────────────
+     Shared by the hero name and the featured stat's number, so the page's
+     two "full measures" visibly belong together. */
+  .gradient-ink {
     background: linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6);
     background-size: 300% 100%;
     -webkit-background-clip: text;
@@ -471,7 +476,7 @@ const dataPoints = [
     color: transparent;
     animation: gradient-pan 9s ease-in-out infinite;
   }
-  :global(.dark) .hero-name {
+  :global(.dark) .gradient-ink {
     background-image: linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5);
     background-size: 300% 100%;
     -webkit-background-clip: text;
@@ -546,19 +551,50 @@ const dataPoints = [
     .stat-rule { transform: scaleX(1); }
   }
 
-  /* Featured tile: tinted wash + colored border + hue-colored kicker,
-     so the portfolio measure clearly outranks the KPI tiles beside it. */
+  /* Featured tile: an animated gradient border matching the hero name.
+     Two-layer background trick — an opaque tinted fill clipped to the
+     padding box sits over the panning gradient clipped to the border box,
+     so only the 1px border ring shows the moving gradient. The single
+     background-position animation pans both layers, but the fill layer is
+     100% sized so only the gradient ring visibly moves. */
   .stat-featured {
-    background: color-mix(in srgb, var(--hue) 8%, transparent);
-    border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+    border: 1px solid transparent;
+    background:
+      linear-gradient(
+        color-mix(in srgb, #2a78d6 7%, #ffffff),
+        color-mix(in srgb, #2a78d6 7%, #ffffff)
+      ) padding-box,
+      linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6) border-box;
+    background-size: 100% 100%, 300% 100%;
+    animation: gradient-pan 9s ease-in-out infinite;
+  }
+  :global(.dark) .stat-featured {
+    background:
+      linear-gradient(
+        color-mix(in srgb, #3987e5 9%, #12121a),
+        color-mix(in srgb, #3987e5 9%, #12121a)
+      ) padding-box,
+      linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5) border-box;
+    background-size: 100% 100%, 300% 100%;
   }
   .stat-kicker {
     color: var(--hue);
   }
 
-  /* ── Section rules: hairline gradient fading out to the right ─────── */
+  /* ── Section rules: hairline wearing the same panning gradient ──────
+     Identical hues and timing to .gradient-ink; a mask keeps the old
+     fade-out toward the right edge. */
   .section-rule {
-    background: linear-gradient(90deg, rgba(42, 120, 214, 0.45), rgba(232, 123, 164, 0.25), transparent);
+    background: linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6);
+    background-size: 300% 100%;
+    animation: gradient-pan 9s ease-in-out infinite;
+    opacity: 0.55;
+    mask-image: linear-gradient(90deg, black 0%, black 45%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, black 0%, black 45%, transparent 100%);
+  }
+  :global(.dark) .section-rule {
+    background-image: linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5);
+    background-size: 300% 100%;
   }
 
   /* ── Filter chips (the legend) ─────────────────────────────────────── */
