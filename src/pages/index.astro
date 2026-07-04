@@ -23,13 +23,19 @@ const counts = Object.fromEntries(
 );
 const total = projects.length;
 
-/** Headline stats for the count-up strip. Numbers are real figures pulled
- *  from the projects themselves; `suffix` renders after the animated value. */
-const stats = [
-  { value: total, suffix: '',    label: 'Projects shipped & counting', hueL: '#2a78d6', hueD: '#3987e5' },
-  { value: 31,    suffix: 'K+',  label: 'Auction listings analyzed',   hueL: '#1baf7a', hueD: '#199e70' },
-  { value: 191,   suffix: '',    label: 'Player projections audited',  hueL: '#4a3aa7', hueD: '#9085e9' },
-  { value: 184,   suffix: '',    label: 'Tour de France riders tracked', hueL: '#e87ba4', hueD: '#d55181' },
+/**
+ * Stats for the count-up strip. The first entry is the headline measure —
+ * the portfolio itself — and renders as a featured tile; the rest are
+ * fun data points pulled from inside the projects, visually demoted so
+ * they don't read as equals of shipped work.
+ */
+const headlineStat = {
+  value: total, suffix: '', label: 'Projects shipped & counting', hueL: '#2a78d6', hueD: '#3987e5',
+};
+const dataPoints = [
+  { value: 31,  suffix: 'K+', label: 'Auction listings analyzed',     hueL: '#1baf7a', hueD: '#199e70' },
+  { value: 191, suffix: '',   label: 'Player projections audited',    hueL: '#4a3aa7', hueD: '#9085e9' },
+  { value: 184, suffix: '',   label: 'Tour de France riders tracked', hueL: '#e87ba4', hueD: '#d55181' },
 ];
 ---
 
@@ -194,25 +200,44 @@ const stats = [
               style={`animation-delay: ${dot.d}s, ${dot.d + 0.5}s; --float-dur: ${4.5 + i * 0.6}s;`}
             />
           ))}
-
-          <!-- Annotation chip fades in last — a little tooltip wink -->
-          <g class="chart-note" style="animation-delay: 2.6s;">
-            <rect x="386" y="34" width="64" height="24" rx="6" class="note-box" />
-            <text x="418" y="50" text-anchor="middle" class="note-text font-mono">▲ 12%</text>
-          </g>
         </svg>
       </div>
     </div>
 
-    <!-- ─── Stats strip — count-up numbers with growing underlines ──────── -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-16">
-      {stats.map((stat, i) => (
+    <!--
+      Stats strip. The featured tile (the portfolio measure) gets a tinted
+      wash, colored border, and a "Shipped" kicker; the three KPI tiles are
+      plainly surfaced and labeled "Data point" so the hierarchy is clear:
+      one real measure, three fun facts from inside the work.
+    -->
+    <div class="grid grid-cols-2 lg:grid-cols-[1.25fr_1fr_1fr_1fr] gap-4 mt-16">
+      <div
+        class="stat-tile stat-featured reveal rounded-xl p-5 col-span-2 lg:col-span-1"
+        style={`--hue-l:${headlineStat.hueL}; --hue-d:${headlineStat.hueD}; --stagger:0;`}
+      >
+        <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
+          Shipped
+        </p>
+        <p class="font-display text-4xl md:text-5xl font-bold text-ink dark:text-frost tabular-nums">
+          <span class="count-up" data-target={headlineStat.value}>0</span>{headlineStat.suffix}
+        </p>
+        <!-- Colored underline grows in with the reveal -->
+        <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
+        <p class="text-xs font-mono tracking-wide uppercase text-ink-soft dark:text-frost-soft">
+          {headlineStat.label}
+        </p>
+      </div>
+
+      {dataPoints.map((stat, i) => (
         <div
           class="stat-tile reveal rounded-xl p-5
                  bg-white dark:bg-night-900
                  border border-day-200 dark:border-night-700"
-          style={`--hue-l:${stat.hueL}; --hue-d:${stat.hueD}; --stagger:${i};`}
+          style={`--hue-l:${stat.hueL}; --hue-d:${stat.hueD}; --stagger:${i + 1};`}
         >
+          <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-2 text-ink-mute dark:text-frost-mute">
+            Data point
+          </p>
           <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
             <span class="count-up" data-target={stat.value}>0</span>{stat.suffix}
           </p>
@@ -228,11 +253,8 @@ const stats = [
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
   <section id="work" class="px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">
-    <!-- Section header: axis-style index label + heading + gradient rule -->
+    <!-- Section header: heading + gradient rule -->
     <div class="reveal mb-8">
-      <p class="font-mono text-[11px] tracking-[0.25em] uppercase text-ink-mute dark:text-frost-mute mb-2">
-        01 / Work
-      </p>
       <div class="flex items-center gap-5">
         <h2 class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost">
           Projects
@@ -294,9 +316,6 @@ const stats = [
   <!-- ─── About ─────────────────────────────────────────────────────────── -->
   <section id="about" class="px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">
     <div class="reveal mb-8">
-      <p class="font-mono text-[11px] tracking-[0.25em] uppercase text-ink-mute dark:text-frost-mute mb-2">
-        02 / About
-      </p>
       <div class="flex items-center gap-5">
         <h2 class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost">
           Background
@@ -503,22 +522,6 @@ const stats = [
   }
   :global(.dark) .chart-dot { fill: #d55181; stroke: #0b0b12; }
 
-  /* Annotation chip: hidden until its late fade-in */
-  .chart-note {
-    opacity: 0;
-    animation: fade-in 0.6s ease forwards;
-  }
-  .note-box {
-    fill: #ffffff;
-    stroke: rgba(22, 21, 29, 0.12);
-  }
-  .note-text {
-    fill: #006300;
-    font-size: 11px;
-  }
-  :global(.dark) .note-box { fill: #1a1a26; stroke: rgba(242, 242, 245, 0.12); }
-  :global(.dark) .note-text { fill: #0ca30c; }
-
   /* ── Stat tiles: colored rule grows when the tile reveals ──────────── */
   .stat-rule {
     background: var(--hue);
@@ -531,6 +534,16 @@ const stats = [
   }
   @media (prefers-reduced-motion: reduce) {
     .stat-rule { transform: scaleX(1); }
+  }
+
+  /* Featured tile: tinted wash + colored border + hue-colored kicker,
+     so the portfolio measure clearly outranks the KPI tiles beside it. */
+  .stat-featured {
+    background: color-mix(in srgb, var(--hue) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+  }
+  .stat-kicker {
+    color: var(--hue);
   }
 
   /* ── Section rules: hairline gradient fading out to the right ─────── */

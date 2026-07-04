@@ -3,7 +3,7 @@
   "description": "Admissions management platform for private schools — KPI dashboards, applicant pipeline tracking, and holistic class-building tools for admissions directors and officers. Replaces a legacy Power BI workflow with a purpose-built React + FastAPI app.",
   "image": "/images/admissionsbuilder.jpg",
   "status": "beta",
-  "category": "data",
+  "category": "apps",
   "tags": [
     "FastAPI",
     "React",
