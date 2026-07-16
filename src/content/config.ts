@@ -23,6 +23,13 @@ const projects = defineCollection({
     tags: z.array(z.string()),
     /** Preview image shown at the top of the card — swap in a real screenshot when ready */
     image: z.string().optional().nullable(),
+    /**
+     * How the preview image fills the card's frame.
+     * 'cover' (default) crops a screenshot to fill — right for full-bleed captures.
+     * 'contain' pads the image on a light plate so a full logo/wordmark always
+     * shows uncropped and reads deliberately in dark mode.
+     */
+    imageFit: z.enum(['cover', 'contain']).default('cover'),
     /** Public live URL — omit if not yet deployed */
     liveUrl: z.string().url().optional().nullable(),
     /** GitHub repository URL — omit if private or not yet created */

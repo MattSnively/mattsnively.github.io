@@ -22,14 +22,18 @@ interface Props {
   category: CategoryId;
   tags: string[];
   image?: string | null;
+  /** 'cover' crops a screenshot to fill; 'contain' pads a logo on a light plate */
+  imageFit?: 'cover' | 'contain';
   liveUrl?: string | null;
   githubUrl?: string | null;
   /** 0-based grid index — drives the staggered scroll-reveal delay */
   index?: number;
 }
 
-const { title, description, status, category, tags, image, liveUrl, githubUrl, index = 0 } =
-  Astro.props;
+const {
+  title, description, status, category, tags, image,
+  imageFit = 'cover', liveUrl, githubUrl, index = 0,
+} = Astro.props;
 
 /** Resolve the category's accent hues (light + dark surface steps) */
 const cat = CATEGORY_MAP[category];
@@ -90,13 +94,25 @@ const ICON_COLOR_DARK  = '82808e';
   <!-- Category accent bar — the card's color signature, always visible -->
   <div class="h-1 w-full shrink-0" style="background: var(--cat);" aria-hidden="true"></div>
 
-  <!-- Preview image with overlaid category tag + status badge -->
-  <div class="relative w-full aspect-video bg-day-100 dark:bg-night-800 overflow-hidden">
+  <!--
+    Preview image with overlaid category tag + status badge.
+    'contain' logos sit padded on a white plate in both themes so the full
+    wordmark shows and dark mode reads as deliberate, not a bleed.
+  -->
+  <div
+    class:list={[
+      'relative w-full aspect-video overflow-hidden',
+      image && imageFit === 'contain' ? 'bg-white' : 'bg-day-100 dark:bg-night-800',
+    ]}
+  >
     {image ? (
       <img
         src={image}
         alt={`${title} preview`}
-        class="card-img w-full h-full object-cover"
+        class:list={[
+          'card-img w-full h-full',
+          imageFit === 'contain' ? 'object-contain p-6' : 'object-cover',
+        ]}
         loading="lazy"
       />
     ) : (

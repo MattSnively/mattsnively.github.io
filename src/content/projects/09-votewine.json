@@ -1,7 +1,8 @@
 {
   "title": "VoteWineParty",
   "description": "Custom t-shirt drop built on a political parody premise — pick two wines and a year, get a campaign-style tee. Live design customizer with real-time preview and PNG export. Printful + Stripe integration planned.",
-  "image": null,
+  "image": "/images/votewineparty.png",
+  "imageFit": "contain",
   "status": "in-progress",
   "category": "play",
   "tags": [
