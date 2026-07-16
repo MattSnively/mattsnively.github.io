@@ -12,5 +12,6 @@
   ],
   "liveUrl": "https://mattsnively.github.io/FF-RC/",
   "githubUrl": "https://github.com/MattSnively/FF-RC",
-  "order": 2
+  "order": 2,
+  "kpi": { "value": 191, "suffix": "", "label": "Player projections audited" }
 }

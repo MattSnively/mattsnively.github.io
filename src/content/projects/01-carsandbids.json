@@ -12,5 +12,6 @@
   ],
   "liveUrl": "https://mattsnively.github.io/CarsAndBidsData/",
   "githubUrl": "https://github.com/MattSnively/CarsAndBidsData",
-  "order": 1
+  "order": 1,
+  "kpi": { "value": 31, "suffix": "K+", "label": "Auction listings analyzed" }
 }

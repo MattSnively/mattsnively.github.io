@@ -36,6 +36,18 @@ const projects = defineCollection({
     githubUrl: z.string().url().optional().nullable(),
     /** Lower number = higher position in the grid */
     order: z.number(),
+    /**
+     * Optional headline metric this project contributes to the hero's
+     * rotating KPI panel. Any project that sets one joins the rotation,
+     * wearing its category hue — so the pool grows as projects are added.
+     */
+    kpi: z
+      .object({
+        value: z.number(),
+        suffix: z.string().default(''),
+        label: z.string(),
+      })
+      .optional(),
   }),
 });
 

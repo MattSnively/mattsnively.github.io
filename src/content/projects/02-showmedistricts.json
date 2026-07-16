@@ -13,5 +13,6 @@
   ],
   "liveUrl": "https://www.show-me-districts.com/",
   "githubUrl": "https://github.com/MattSnively/show-me-districts",
-  "order": 4
+  "order": 4,
+  "kpi": { "value": 1654, "suffix": "", "label": "Census tracts mapped" }
 }
