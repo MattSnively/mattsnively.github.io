@@ -13,5 +13,57 @@
   "liveUrl": "https://mattsnively.github.io/TDF-tracker/",
   "githubUrl": "https://github.com/MattSnively/TDF-tracker",
   "order": 7,
-  "kpi": { "value": 184, "suffix": "", "label": "Tour de France riders tracked" }
+  "kpi": { "value": 184, "suffix": "", "label": "Tour de France riders tracked" },
+  "detail": {
+    "tagline": "A live dashboard for the 2026 Tour de France — real race results and official Tissot fantasy scoring in one place.",
+    "timeline": "2026 · live during the Tour",
+    "role": "Solo — scrapers, data pipeline, and dashboard.",
+    "overview": [
+      "The Tour de France runs 21 stages over three weeks, and following both the real race and a Tissot fantasy league means juggling a dozen tabs. TDF-Tracker pulls them together: live stage results, jersey holders, and every rider's official fantasy points across six connected views, refreshed as each stage settles.",
+      "The fantasy numbers are the real thing — pulled straight from the Tissot game's authenticated API so captain doublings, jersey bonuses, and the daily bonus question all reconcile exactly, rather than being re-derived from the rulebook. An early attempt to recompute points drifted on special stages (the opening team time trial scores each rider as a fraction of the team's result), so the tracker trusts the source of truth instead."
+    ],
+    "metrics": [
+      { "value": "184", "label": "Riders tracked" },
+      { "value": "21", "label": "Stages covered" },
+      { "value": "6", "label": "Analytical views" },
+      { "value": "2", "label": "Live data feeds" }
+    ],
+    "gallery": [
+      { "src": "/images/tdftracker/overview.jpg", "caption": "Overview — race state at a glance: stage progress, jersey holders, my league rank, and top fantasy scorers broken down by points source." },
+      { "src": "/images/tdftracker/stages.jpg", "caption": "Stages — the real letour.fr result for each stage (finish order, times) paired with my fantasy scorecard for that day." },
+      { "src": "/images/tdftracker/riders.jpg", "caption": "Riders — every rider's official Tissot points with a click-through breakdown by source: stage finishes, sprints, climbs, and jerseys." },
+      { "src": "/images/tdftracker/value.jpg", "caption": "Value — a cost-vs-points scatter and an optimizer that builds the best legal 8-rider squad within the 120-star budget." },
+      { "src": "/images/tdftracker/my-team.jpg", "caption": "My Team — my squad's per-stage points, cumulative total and rank, and the live league standings." }
+    ],
+    "features": [
+      { "title": "Six connected views", "detail": "Overview KPIs and jerseys, per-stage results, every rider's points, team aggregates, a value optimizer, and a personal My-Team dashboard." },
+      { "title": "Official Tissot scoring", "detail": "Fantasy points come straight from the game's API, so every captain bonus, jersey award, and bonus-question point matches the official standings." },
+      { "title": "Real race + fantasy, joined", "detail": "Each stage pairs the actual letour.fr result — finish order, GC, jerseys, time gaps — with the fantasy scorecard for that day." },
+      { "title": "Value optimizer", "detail": "A cost-vs-points scatter and a solver that assembles the best legal 8-rider squad within the 120-star budget." },
+      { "title": "Personal league tracking", "detail": "My-Team view shows your squad's per-stage points, cumulative rank, and live league standings." }
+    ],
+    "challenges": [
+      {
+        "title": "Trust the game, don't re-derive it",
+        "problem": "Fantasy points look computable from the rules, but special stages break naive scoring — the opening team time trial, for instance, scores each rider as a fraction of the team's result.",
+        "outcome": "Rather than recompute, the tracker pulls official Tissot scores directly from the game's authenticated API, so captain doublings, jersey bonuses, and the bonus question reconcile with the real standings exactly."
+      },
+      {
+        "title": "Two data sources, one clean model",
+        "problem": "The official points API omits rider costs and knows nothing about the actual race, while letour.fr has results but no fantasy data — and rider names differ across both.",
+        "outcome": "A Python build step joins the authenticated API to a rider-cost table via an accent- and ligature-folded name key, layers in scraped letour.fr race results, and emits one JSON the app loads."
+      },
+      {
+        "title": "Per-stage points without a per-stage feed",
+        "problem": "The API returns cumulative season totals, not what each rider scored on a given stage — but the whole dashboard hinges on per-stage numbers.",
+        "outcome": "The pipeline snapshots the cumulative totals after every stage and differences consecutive snapshots to recover per-stage points for all riders, while the personal squad gets exact per-stage scores from the game's match-sheet endpoint."
+      }
+    ],
+    "stack": [
+      { "name": "React + Tailwind", "why": "The six-view dashboard UI." },
+      { "name": "Recharts", "why": "Stacked points-by-source bars and the cost-vs-points scatter." },
+      { "name": "Python", "why": "Scrapes both feeds, joins them, and builds the single data file." },
+      { "name": "Tissot API + letour.fr", "why": "Official fantasy scores plus real race results." }
+    ]
+  }
 }
