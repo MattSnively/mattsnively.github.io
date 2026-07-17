@@ -14,5 +14,56 @@
   "liveUrl": "https://www.show-me-districts.com/",
   "githubUrl": "https://github.com/MattSnively/show-me-districts",
   "order": 2,
-  "kpi": { "value": 1654, "suffix": "", "label": "Census tracts mapped" }
+  "kpi": { "value": 1654, "suffix": "", "label": "Census tracts mapped" },
+  "detail": {
+    "tagline": "An interactive, nonpartisan look at how Missouri's congressional maps are drawn — and how fair they really are.",
+    "timeline": "2025 · ongoing",
+    "role": "Solo — data, maps, fairness metrics, and site.",
+    "overview": [
+      "Missouri redrew its congressional map in a rare mid-cycle special session in 2025 — the kind of quiet, procedural change that quietly decides elections. Show Me Districts makes that process legible: an explicitly nonpartisan tool to see how the state's eight districts have been drawn over two centuries, redraw them yourself, and measure how fair any map actually is.",
+      "The fairness scores aren't hand-waving. Polsby-Popper and Reock compactness, population deviation, and the efficiency gap are computed in the browser with Turf.js from real census-tract geometry and decades of election returns. Draw a plan in the editor and every metric updates as you paint."
+    ],
+    "metrics": [
+      { "value": "8", "label": "Congressional districts" },
+      { "value": "1,654", "label": "Paintable census tracts" },
+      { "value": "4", "label": "Fairness metrics" },
+      { "value": "1789–2025", "label": "Mapped history" }
+    ],
+    "gallery": [
+      { "src": "/images/showmedistricts/history.jpg", "caption": "District History — Missouri's boundaries across two centuries as a partisan-lean choropleth; scrub the timeline and click a district for its election results." },
+      { "src": "/images/showmedistricts/editor.jpg", "caption": "Draw Your Map — paint the state's 1,654 census tracts into eight districts and watch population balance and fairness scores update in real time." },
+      { "src": "/images/showmedistricts/fair-maps.jpg", "caption": "Fair Maps — the enacted 2022 map scored on Polsby-Popper, Reock, population deviation and efficiency gap, ready to compare against alternatives." },
+      { "src": "/images/showmedistricts/redistricting-2025.jpg", "caption": "2025 Mid-Cycle Redistricting — a documented timeline of Missouri's out-of-cycle redraw, from the special session to the signed HB 1." }
+    ],
+    "features": [
+      { "title": "District history, 1789–2025", "detail": "Every Missouri congressional map since statehood, shaded by partisan lean, with a timeline scrubber and click-through election results per district." },
+      { "title": "Draw your own map", "detail": "Paint 1,654 census tracts into eight districts with a brush or fill tool; population balance and fairness metrics recompute on every stroke." },
+      { "title": "Fairness scoring", "detail": "Polsby-Popper, Reock, population deviation and efficiency gap — the same measures courts and scholars use — computed client-side from real geometry." },
+      { "title": "Save & compare plans", "detail": "Maps persist to a database so a plan can be saved, revisited, and compared against the current enacted map." }
+    ],
+    "challenges": [
+      {
+        "title": "Fairness math that runs in the browser",
+        "problem": "Compactness and partisan-fairness scores normally come from desktop GIS tools — not something a visitor can run live on a map they're actively drawing.",
+        "outcome": "Turf.js computes Polsby-Popper, Reock, population deviation and the efficiency gap client-side from tract geometry, so every metric updates in real time as you paint, with no server round-trip."
+      },
+      {
+        "title": "Painting 1,654 tracts without lag",
+        "problem": "Assigning thousands of census-tract polygons to districts by click-and-drag can bog down as the map re-renders on every stroke.",
+        "outcome": "MapLibre GL renders the tract layer on the GPU and the editor updates only the changed features' fill state, so the brush stays responsive across the whole state."
+      },
+      {
+        "title": "A serverless civic tool that stays free",
+        "problem": "Public-interest projects can't carry a server bill, yet saving user-drawn maps and serving decades of geodata usually implies a backend.",
+        "outcome": "The site runs on Cloudflare with map saves persisted to Supabase, and heavy geometry is pre-simplified with mapshaper at build time — so it hosts cheaply and loads fast without an always-on server."
+      }
+    ],
+    "stack": [
+      { "name": "Astro + Svelte", "why": "Static content pages with interactive Svelte islands for the map tools." },
+      { "name": "MapLibre GL", "why": "GPU-rendered vector maps for history, editor, and comparison views." },
+      { "name": "Turf.js", "why": "Client-side geospatial math behind the fairness metrics." },
+      { "name": "Supabase", "why": "Persists user-drawn district plans for save and recall." },
+      { "name": "Cloudflare", "why": "Serverless hosting for a fast, low-cost civic tool." }
+    ]
+  }
 }
