@@ -12,6 +12,6 @@
   ],
   "liveUrl": "https://mattsnively.github.io/TDF-tracker/",
   "githubUrl": "https://github.com/MattSnively/TDF-tracker",
-  "order": 6,
+  "order": 7,
   "kpi": { "value": 184, "suffix": "", "label": "Tour de France riders tracked" }
 }
