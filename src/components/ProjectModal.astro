@@ -536,17 +536,18 @@ const first = detail.gallery?.[0];
     display: grid;
     gap: 1rem;
   }
+  /* Ambient category-hue wash instead of a left stripe: the card is a faint
+     tint of its accent, edged by a soft hue-tinted border (no neutral box,
+     no bar). Dark surfaces swallow tint, so the mix is stronger there. */
   .modal-challenge {
     padding: 1rem 1.125rem;
     border-radius: 10px;
-    border: 1px solid theme('colors.day.200');
-    border-left: 3px solid var(--cat);
-    background: theme('colors.day.100');
+    background: color-mix(in srgb, var(--cat) 7%, theme('colors.day.100'));
+    border: 1px solid color-mix(in srgb, var(--cat) 22%, transparent);
   }
   :global(.dark) .modal-challenge {
-    border-color: theme('colors.night.700');
-    border-left-color: var(--cat);
-    background: theme('colors.night.800');
+    background: color-mix(in srgb, var(--cat) 13%, theme('colors.night.800'));
+    border-color: color-mix(in srgb, var(--cat) 30%, transparent);
   }
   .modal-challenge-title {
     font-weight: 600;
