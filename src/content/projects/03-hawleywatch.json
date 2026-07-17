@@ -13,5 +13,57 @@
   ],
   "liveUrl": "https://hawleywatch.com",
   "githubUrl": "https://github.com/MattSnively/Hawley_Watch",
-  "order": 5
+  "order": 5,
+  "detail": {
+    "tagline": "A political-accountability tracker measuring what Senator Josh Hawley says against how he actually votes.",
+    "timeline": "2026 · ongoing",
+    "role": "Solo — research, data, scoring system, and site.",
+    "overview": [
+      "Politicians say one thing and vote another, and the gap is hard to see without doing the homework. Hawley Watch does that homework for one U.S. senator: it pairs public statements with the legislative record, scores each claim, and connects the money and the votes to what Missourians actually experience.",
+      "Every number traces to a public source — GovTrack and Congress.gov for votes, OpenSecrets and FEC filings for money, BLS and census data for local impact. The site is deliberately even-handed: a 'Credit Where It's Due' section documents where his words and record align, because credibility comes from fairness."
+    ],
+    "metrics": [
+      { "value": "23", "label": "Claims analyzed" },
+      { "value": "8", "label": "Key votes tracked" },
+      { "value": "$15M", "label": "Fundraising traced" },
+      { "value": "5", "label": "Public data sources" }
+    ],
+    "gallery": [
+      { "src": "/images/hawleywatch/home.jpg", "caption": "Home — the accountability dashboard: consistency ratio, average truth score, career fundraising, and the latest scored analysis." },
+      { "src": "/images/hawleywatch/voting-record.jpg", "caption": "Voting Record — key votes flagged Consistent or Contradiction against his public rhetoric, each with a sourced note." },
+      { "src": "/images/hawleywatch/money-trail.jpg", "caption": "Money Trail — career and cycle fundraising by industry, drawn from OpenSecrets and FEC filings." },
+      { "src": "/images/hawleywatch/impact.jpg", "caption": "Impact — cost-of-living, housing, healthcare and democracy metrics from official data, each tied back to a vote." },
+      { "src": "/images/hawleywatch/credit.jpg", "caption": "Credit Where It's Due — the other side of the ledger: positions where his statements and record genuinely align." }
+    ],
+    "features": [
+      { "title": "Truth-scored analysis", "detail": "Each claim is fact-checked and scored 0–100 with a plain-language verdict, rolled into a running average truth score." },
+      { "title": "Says-vs-does voting record", "detail": "A sortable table of key votes, each flagged Consistent or Contradiction against his rhetoric, with a note explaining the call." },
+      { "title": "Follow the money", "detail": "Career and cycle fundraising broken down by industry from OpenSecrets and FEC data, surfacing conflicts between donors and positions." },
+      { "title": "Impact on Missouri", "detail": "Cost-of-living, housing, healthcare and democracy metrics from official sources, each tied back to a specific vote." },
+      { "title": "Credit where it's due", "detail": "The other side of the ledger — documented positions where his statements and votes genuinely align." }
+    ],
+    "challenges": [
+      {
+        "title": "One accountability score across very different pages",
+        "problem": "Fact-check posts, a votes table, donor breakdowns, and impact metrics look nothing alike, yet all need to feed one consistency ratio and truth score that never drifts from the underlying entries.",
+        "outcome": "Everything is authored as typed Astro content collections and structured JSON; a single computeStats routine derives the headline numbers across posts, votes, and the tweet archive, so the dashboard always reconciles with its sources."
+      },
+      {
+        "title": "Sourced, not asserted",
+        "problem": "An accountability site is worthless if readers can't check it — every claim needs a traceable source, not just a verdict.",
+        "outcome": "Each vote, dollar figure, and impact metric carries its source (GovTrack, Congress.gov, OpenSecrets, FEC, BLS) inline, and the methodology is documented so any figure can be independently verified."
+      },
+      {
+        "title": "Even-handed by construction",
+        "problem": "A partisan-looking accountability tool gets dismissed by exactly the audience it most needs to reach.",
+        "outcome": "Claims are bucketed as consistent, receipt, or noise by the same rules regardless of who they flatter, and a dedicated 'Credit Where It's Due' feed surfaces the consistent ones — fairness is encoded in the data model, not just the tone."
+      }
+    ],
+    "stack": [
+      { "name": "Astro", "why": "Static multi-page site — fast, cacheable, no backend to run." },
+      { "name": "Content collections", "why": "Typed fact-check posts and credit entries with schema validation." },
+      { "name": "TypeScript", "why": "A single stats module derives the consistency ratio and truth score." },
+      { "name": "Structured JSON", "why": "Votes, donor money, and impact metrics as sourced, verifiable records." }
+    ]
+  }
 }
