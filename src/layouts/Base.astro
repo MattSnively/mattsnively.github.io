@@ -38,15 +38,15 @@ const {
 
     <!--
       Inline script runs before first paint:
-      1. Applies the saved theme class (prevents a flash of the wrong theme).
+      1. Applies the theme class (prevents a flash of the wrong theme). Dark is
+         the default; only an explicit light choice (saved via the toggle)
+         opts out, so first-time visitors always land in dark mode.
       2. Stamps `js` on <html> so reveal-animation styles only hide content
          when JavaScript is actually available to un-hide it (no-JS fallback).
     -->
     <script is:inline>
       (function () {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (saved === 'dark' || (!saved && prefersDark)) {
+        if (localStorage.getItem('theme') !== 'light') {
           document.documentElement.classList.add('dark');
         }
         document.documentElement.classList.add('js');
