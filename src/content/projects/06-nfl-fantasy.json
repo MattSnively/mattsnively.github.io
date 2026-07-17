@@ -13,5 +13,57 @@
   "liveUrl": "https://mattsnively.github.io/FF-RC/",
   "githubUrl": "https://github.com/MattSnively/FF-RC",
   "order": 4,
-  "kpi": { "value": 191, "suffix": "", "label": "Player projections audited" }
+  "kpi": { "value": 191, "suffix": "", "label": "Player projections audited" },
+  "detail": {
+    "tagline": "An audit of how ESPN's 2025 preseason fantasy projections held up against what actually happened.",
+    "timeline": "2026 · self-directed",
+    "role": "Solo — Python data pipeline, analysis, and the front-end story.",
+    "overview": [
+      "Every fantasy draft leans on preseason projections, but nobody goes back to check whether they were any good. Reality Check does — a scrollytelling audit of ESPN's 2025 preseason numbers against what all 191 audited players actually did across the season.",
+      "The finding: projections run hot. More than half the pool fell short, ESPN bakes optimism into the mid-rounds and caution into the bargain bin, and wide receivers were the most over-projected group on the board. The piece walks from that headline down to a sortable, per-player data room — and separates 'played badly' from 'never played,' because an injury breaks a season total no projection could price in."
+    ],
+    "metrics": [
+      { "value": "191", "label": "Players audited" },
+      { "value": "55%", "label": "Missed their projection" },
+      { "value": "4", "label": "Positions graded" },
+      { "value": "18 wk", "label": "Of real results" }
+    ],
+    "gallery": [
+      { "src": "/images/ffrc/hero.jpg", "caption": "Gut Check — the headline: 191 audited players, four positions, and the finding that 55% fell short of their projection." },
+      { "src": "/images/ffrc/dead-zone.jpg", "caption": "The mid-round dead zone — beat rate by projected tier shows ESPN over-projects the mid-rounds (only 24% beat) and under-projects cheap fliers." },
+      { "src": "/images/ffrc/outliers.jpg", "caption": "Outliers — separating players who played badly from those who got hurt, by reading points per game actually played." },
+      { "src": "/images/ffrc/player-mapping.jpg", "caption": "Player Mapping — chart any of 191 players' real week-by-week scoring against ESPN's flat preseason line." },
+      { "src": "/images/ffrc/data-room.jpg", "caption": "Data Room — the whole board: every audited player, projected vs. actual, with consistency, boom/bust, and volatility (CV)." }
+    ],
+    "features": [
+      { "title": "A guided data story", "detail": "Six numbered chapters take you from the headline miss rate down to individual players, each chart annotated with its takeaway." },
+      { "title": "Beat rate by tier", "detail": "Groups players by projected PPG to show ESPN systematically over-projects the mid-rounds and under-projects cheap fliers." },
+      { "title": "Availability vs. performance", "detail": "Separates busts who played badly from those who got hurt, reading points per game actually played — not spread across a full season." },
+      { "title": "Per-player weekly map", "detail": "Pick any of 191 players to chart their real week-by-week scoring against ESPN's flat preseason line." },
+      { "title": "The whole board", "detail": "A searchable, sortable table of every audited player with consistency, boom/bust counts, and week-to-week volatility (CV)." }
+    ],
+    "challenges": [
+      {
+        "title": "Two data worlds that don't line up",
+        "problem": "Preseason projections live in a marketing PDF; actual results live in a stats API — different names, formats, and player universes that must be reconciled before anything can be compared.",
+        "outcome": "A Python pipeline parses the projection PDF, pulls real stats from the ESPN API, and merges them into one keyed dataset with per-player deltas — so every comparison rests on matched, deduplicated records."
+      },
+      {
+        "title": "Averages hide the story",
+        "problem": "A steady 15-PPG grinder and a boom-or-bust gambler can post the identical average, and a season total collapses the moment a star misses games — so raw projected-vs-actual numbers mislead.",
+        "outcome": "The analysis adds per-game (not per-season) rates, week-to-week volatility via coefficient of variation, and an availability flag, so the audit distinguishes a bad projection from a bad-luck injury."
+      },
+      {
+        "title": "An analysis people will actually read",
+        "problem": "A CSV of projection errors convinces nobody; the insight only lands if the reader can follow the argument and poke at the data themselves.",
+        "outcome": "The findings ship as a numbered scrollytelling narrative — annotated charts that build to a conclusion — backed by an interactive per-player explorer and a full data table for anyone who wants to verify it."
+      }
+    ],
+    "stack": [
+      { "name": "Python + pandas", "why": "Merges projections and actuals into one dataset with per-player deltas and volatility." },
+      { "name": "ESPN API", "why": "Source of real 2025 weekly and season results." },
+      { "name": "PDF parsing", "why": "Extracts ESPN's preseason projections from their published sheet." },
+      { "name": "React", "why": "Interactive charts, the per-player explorer, and the sortable data room." }
+    ]
+  }
 }
