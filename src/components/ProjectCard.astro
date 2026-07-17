@@ -26,20 +26,23 @@ interface Props {
   imageFit?: 'cover' | 'contain';
   liveUrl?: string | null;
   githubUrl?: string | null;
+  /** Id of this project's case-study modal, when it has deep-dive content.
+   *  Present → the card shows a "Case study" trigger that opens the modal. */
+  detailId?: string | null;
   /** 0-based grid index — drives the staggered scroll-reveal delay */
   index?: number;
 }
 
 const {
   title, description, status, category, tags, image,
-  imageFit = 'cover', liveUrl, githubUrl, index = 0,
+  imageFit = 'cover', liveUrl, githubUrl, detailId, index = 0,
 } = Astro.props;
 
 /** Resolve the category's accent hues (light + dark surface steps) */
 const cat = CATEGORY_MAP[category];
 
-/** True when at least one link is present — drives the footer visibility */
-const hasLinks = liveUrl || githubUrl;
+/** True when the footer has anything to show — a case-study trigger or a link */
+const hasFooter = detailId || liveUrl || githubUrl;
 
 /**
  * Maps display tag names to Simple Icons CDN slugs.
@@ -126,7 +129,7 @@ const ICON_COLOR_DARK  = '82808e';
 
     <!-- Category tag (color + text label, never color alone) -->
     <span
-      class="absolute top-3 left-3 inline-flex items-center gap-1.5
+      class="absolute top-3 left-3 z-[2] inline-flex items-center gap-1.5
              font-mono text-[10px] font-medium tracking-[0.12em] uppercase
              text-ink dark:text-frost
              bg-day-50/85 dark:bg-night-900/85 backdrop-blur-sm
@@ -138,9 +141,34 @@ const ICON_COLOR_DARK  = '82808e';
     </span>
 
     <!-- Status badge, opposite corner -->
-    <span class="absolute top-3 right-3">
+    <span class="absolute top-3 right-3 z-[2]">
       <StatusBadge status={status} />
     </span>
+
+    <!--
+      When the project has a case study, the whole preview becomes a second
+      trigger for it (the footer "Case Study" link is easy to miss). A scrim
+      + pill fade in on hover/focus so the affordance is obvious. JS-only, so
+      it's hidden without JS like the footer trigger.
+    -->
+    {detailId && (
+      <button
+        type="button"
+        data-modal-open={detailId}
+        class="card-media-trigger card-detail-link absolute inset-0 z-[1]
+               flex items-center justify-center"
+        aria-label={`View ${title} case study`}
+      >
+        <span class="card-media-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+               stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.3-4.3" stroke-linecap="round" />
+          </svg>
+          Case Study
+        </span>
+      </button>
+    )}
   </div>
 
   <!-- Card body -->
@@ -195,9 +223,19 @@ const ICON_COLOR_DARK  = '82808e';
       })}
     </ul>
 
-    <!-- Links only render when URLs are present -->
-    {hasLinks && (
-      <footer class="flex gap-4 pt-3 border-t border-day-200 dark:border-night-700">
+    <!-- Footer: a case-study trigger (when the project has one) plus links -->
+    {hasFooter && (
+      <footer class="flex flex-wrap items-center gap-4 pt-3 border-t border-day-200 dark:border-night-700">
+        {detailId && (
+          <button
+            type="button"
+            data-modal-open={detailId}
+            class="card-detail-link card-live-link font-mono text-[11px] font-medium tracking-wide uppercase
+                   inline-flex items-center gap-1"
+          >
+            Case Study <span class="link-arrow" aria-hidden="true">→</span>
+          </button>
+        )}
         {liveUrl && (
           <a
             href={liveUrl}
@@ -277,6 +315,63 @@ const ICON_COLOR_DARK  = '82808e';
   .card-fallback span {
     color: var(--cat);
     opacity: 0.4;
+  }
+
+  /* The case-study trigger opens a dialog via JS, so hide it for no-JS
+     visitors — the live/GitHub links still cover them. Mirrors the site's
+     html.js gating used for reveals and the KPI panel. */
+  :global(html:not(.js)) .card-detail-link {
+    display: none;
+  }
+
+  /* ── Preview-image case-study trigger ──────────────────────────────
+     A scrim + pill that fade in when the card is hovered or the button is
+     keyboard-focused, so the image reads as clickable without a permanent
+     overlay competing with the screenshot. */
+  .card-media-trigger {
+    cursor: pointer;
+  }
+  .card-media-trigger::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(22, 21, 29, 0.5), rgba(22, 21, 29, 0) 55%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .card-media-hint {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: theme('fontFamily.mono');
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--cat);
+    padding: 0.45rem 0.85rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 14px -4px rgba(22, 21, 29, 0.5);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  /* Reveal on card hover or keyboard focus of the trigger */
+  .project-card:hover .card-media-trigger::before,
+  .card-media-trigger:focus-visible::before {
+    opacity: 1;
+  }
+  .project-card:hover .card-media-hint,
+  .card-media-trigger:focus-visible .card-media-hint {
+    opacity: 1;
+    transform: none;
+  }
+  /* Keyboard focus ring on the otherwise-transparent trigger */
+  .card-media-trigger:focus-visible {
+    outline: 2px solid var(--cat);
+    outline-offset: -2px;
   }
 
   /* "View Live" wears the category color; its arrow nudges right on hover */

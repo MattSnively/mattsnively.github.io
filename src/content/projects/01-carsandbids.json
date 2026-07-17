@@ -1,17 +1,69 @@
 {
   "title": "CarsAndBids Analyzer",
-  "description": "Interactive analytics dashboard for 31K+ Cars & Bids auction listings. Cross-filterable views across market trends, individual listings, model comparisons, and a high-level overview.",
+  "description": "Interactive analytics dashboard for 35K+ Cars & Bids auction listings. Cross-filterable views across market trends, individual listings, model comparisons, and a high-level overview.",
   "image": "/images/carsandbids.jpg",
   "status": "live",
   "category": "data",
   "tags": [
+    "React",
+    "Recharts",
     "Python",
-    "Pandas",
-    "Data Analysis",
-    "Dashboard"
+    "Playwright"
   ],
   "liveUrl": "https://mattsnively.github.io/CarsAndBidsData/",
   "githubUrl": "https://github.com/MattSnively/CarsAndBidsData",
   "order": 1,
-  "kpi": { "value": 31, "suffix": "K+", "label": "Auction listings analyzed" }
+  "kpi": { "value": 35, "suffix": "K+", "label": "Auction listings analyzed" },
+  "detail": {
+    "tagline": "A self-updating sales-intelligence dashboard on 35K real Cars & Bids auctions.",
+    "timeline": "2025 · self-directed",
+    "role": "Solo — scraper, data pipeline, dashboard, and deploy.",
+    "overview": [
+      "Cars & Bids publishes every auction result but gives you no way to analyze them in aggregate. This dashboard turns 35,514 real listings — 55 months of the enthusiast-car market — into something you can actually interrogate: which makes sell, where prices are heading, and how often a reserve price kills the deal.",
+      "Every chart is a filter. Click a make, a price band, a month, or a reserve status and the entire dashboard re-scopes to that slice, with selections persisting as you move across the Overview, Trends, Listings, Compare, and Insights tabs. It runs entirely in the browser off a prebuilt data file — no backend, no database."
+    ],
+    "metrics": [
+      { "value": "35,514", "label": "Auctions analyzed" },
+      { "value": "$651.6M", "label": "Total GMV tracked" },
+      { "value": "55 mo", "label": "Of market history" },
+      { "value": "Weekly", "label": "Auto-refresh" }
+    ],
+    "gallery": [
+      { "src": "/images/carsandbids/overview.jpg", "caption": "Overview — five headline KPIs over cross-filterable charts; clicking any element re-scopes the whole dashboard." },
+      { "src": "/images/carsandbids/trends.jpg", "caption": "Trends — GMV, sell-through, volume and price over 60 months; click a month to scope every view to that window." },
+      { "src": "/images/carsandbids/compare.jpg", "caption": "Compare — head-to-head make performance with a market-position bubble chart (sell-through × price, sized by volume)." },
+      { "src": "/images/carsandbids/listings.jpg", "caption": "Listings — all 26,497 sold auctions, searchable and sortable, with the priciest sales on top." },
+      { "src": "/images/carsandbids/insights.jpg", "caption": "Insights — a data-journalism narrative on reserve-price failure and the revenue it leaves on the table." }
+    ],
+    "features": [
+      { "title": "Cross-filtering that persists", "detail": "Click any chart element — make, price band, month, reserve status — to filter every visual at once; the selection follows you across all five tabs." },
+      { "title": "Five analytical views", "detail": "Overview KPIs, 60-month Trends, a searchable Listings table, head-to-head Compare, and a narrative Insights story." },
+      { "title": "Self-updating weekly", "detail": "A scheduled scraper adds the latest settled auctions every Saturday and redeploys, so the dashboard is never stale." },
+      { "title": "No backend", "detail": "The whole app is static — a ~475 KB gzipped data file loaded straight into the browser — so it hosts free on GitHub Pages." }
+    ],
+    "challenges": [
+      {
+        "title": "Sell-through rate that stays honest under filtering",
+        "problem": "Sell-through rate is sold ÷ listed, but a price-band filter only exists for sold cars — so naively applying every filter would shrink the denominator and inflate the rate.",
+        "outcome": "Filters are split into 'universe' filters (make, body, reserve, date) that change which listings exist, and 'sold-side' filters (price band) that only narrow sold cars. Rate-bearing charts use the universe set; value charts use the full set — so sell-through is always computed against the right denominator."
+      },
+      {
+        "title": "35K rows, charting in the browser, still instant",
+        "problem": "A 29 MB master CSV is far too heavy to ship to a browser, and re-aggregating tens of thousands of rows on every filter click risks a sluggish UI.",
+        "outcome": "A Python build step packs each record into a 12-element array and emits a ~475 KB gzipped JSON; aggregations run over the compact in-memory set, keeping filter clicks instant even on a slow connection."
+      },
+      {
+        "title": "Keeping data current without a server",
+        "problem": "A static site can't run a scraper on a schedule, yet the auction market moves every week.",
+        "outcome": "A GitHub Actions cron runs a Playwright scraper each Saturday, dedupes new auctions by URL into the committed master CSV, rebuilds the packed JSON, and triggers a redeploy — a self-maintaining pipeline with zero hosting cost."
+      }
+    ],
+    "stack": [
+      { "name": "React + Vite", "why": "Component-driven UI with instant dev builds." },
+      { "name": "Recharts", "why": "Composable charts wired to the shared cross-filter state." },
+      { "name": "Python + pandas", "why": "Build-time scraping, dedup, and packing of the dataset." },
+      { "name": "Playwright", "why": "Headless scraper for weekly incremental auction pulls." },
+      { "name": "GitHub Actions", "why": "Scheduled scrape, build, and deploy — all free." }
+    ]
+  }
 }

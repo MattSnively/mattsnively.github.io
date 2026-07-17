@@ -10,6 +10,7 @@
  */
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import ProjectModal from '../components/ProjectModal.astro';
 import { getCollection } from 'astro:content';
 import { CATEGORIES, CATEGORY_MAP } from '../lib/categories';
 
@@ -341,11 +342,31 @@ const firstKpi = kpiPool[0];
           imageFit={project.data.imageFit}
           liveUrl={project.data.liveUrl}
           githubUrl={project.data.githubUrl}
+          detailId={project.data.detail ? `modal-${project.id}` : undefined}
           index={i}
         />
       ))}
     </div>
   </section>
+
+  <!--
+    Case-study modals — one per project that has deep-dive content, hidden
+    until its card's "Case study" button opens it. Rendered outside the grid
+    so the native <dialog> centres over the whole page.
+  -->
+  {projects
+    .filter((project) => project.data.detail)
+    .map((project) => (
+      <ProjectModal
+        id={`modal-${project.id}`}
+        title={project.data.title}
+        status={project.data.status}
+        category={project.data.category}
+        liveUrl={project.data.liveUrl}
+        githubUrl={project.data.githubUrl}
+        detail={project.data.detail!}
+      />
+    ))}
 
   <!-- ─── About ─────────────────────────────────────────────────────────── -->
   <section id="about" class="px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">

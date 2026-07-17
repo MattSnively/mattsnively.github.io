@@ -1,0 +1,746 @@
+---
+/**
+ * ProjectModal — an on-page case-study dialog for a single project.
+ *
+ * Rendered once per project that has `detail` content and hidden until its
+ * card's "Case study" button opens it. Uses the native <dialog> element so
+ * focus trapping, Esc-to-close, background inert, and the ::backdrop come for
+ * free; the script at the bottom adds backdrop-click close and the gallery.
+ *
+ * Wears its project's category hue (same accent system as the cards) so a
+ * project's colour is consistent from grid to case study.
+ */
+import StatusBadge from './StatusBadge.astro';
+import type { Status } from './StatusBadge.astro';
+import { CATEGORY_MAP } from '../lib/categories';
+import type { CategoryId } from '../lib/categories';
+
+interface Metric { value: string; label: string }
+interface GalleryShot { src: string; caption: string }
+interface Feature { title: string; detail: string }
+interface Challenge { title: string; problem: string; outcome: string }
+interface StackItem { name: string; why: string }
+
+interface Detail {
+  tagline?: string;
+  timeline?: string;
+  role?: string;
+  overview?: string[];
+  metrics?: Metric[];
+  gallery?: GalleryShot[];
+  features?: Feature[];
+  challenges?: Challenge[];
+  stack?: StackItem[];
+}
+
+interface Props {
+  id: string;
+  title: string;
+  status: Status;
+  category: CategoryId;
+  liveUrl?: string | null;
+  githubUrl?: string | null;
+  detail: Detail;
+}
+
+const { id, title, status, category, liveUrl, githubUrl, detail } = Astro.props;
+const cat = CATEGORY_MAP[category];
+const first = detail.gallery?.[0];
+---
+
+<dialog
+  id={id}
+  class="project-modal"
+  aria-labelledby={`${id}-title`}
+  style={`--cat-l:${cat.light}; --cat-d:${cat.dark};`}
+>
+  <!-- Accent bar echoes the card's colour signature -->
+  <div class="modal-accent" aria-hidden="true"></div>
+
+  <article class="modal-card">
+    <!-- Close (top-right); native Esc also closes the dialog -->
+    <button type="button" class="modal-close" data-modal-close aria-label={`Close ${title} case study`}>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <!-- ── Header ─────────────────────────────────────────────── -->
+    <header class="modal-header">
+      <div class="flex items-center gap-2.5 mb-4">
+        <span class="modal-cat-tag">
+          <span class="modal-cat-dot" aria-hidden="true"></span>
+          {cat.label}
+        </span>
+        <StatusBadge status={status} />
+      </div>
+
+      <h2 id={`${id}-title`} class="modal-title">{title}</h2>
+      {detail.tagline && <p class="modal-tagline">{detail.tagline}</p>}
+
+      {(detail.timeline || detail.role) && (
+        <dl class="modal-meta">
+          {detail.timeline && (
+            <div>
+              <dt>Timeline</dt>
+              <dd>{detail.timeline}</dd>
+            </div>
+          )}
+          {detail.role && (
+            <div>
+              <dt>Role</dt>
+              <dd>{detail.role}</dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </header>
+
+    <!-- ── Gallery ────────────────────────────────────────────── -->
+    {detail.gallery && detail.gallery.length > 0 && (
+      <section class="modal-gallery" aria-label="Screenshots">
+        <figure class="gallery-stage">
+          <img class="gallery-main-img" src={first!.src} alt={first!.caption} />
+          <figcaption class="gallery-caption">{first!.caption}</figcaption>
+        </figure>
+        {detail.gallery.length > 1 && (
+          <div class="gallery-thumbs" role="tablist" aria-label="Choose a screenshot">
+            {detail.gallery.map((shot, i) => (
+              <button
+                type="button"
+                class:list={['gallery-thumb', i === 0 && 'is-active']}
+                data-src={shot.src}
+                data-caption={shot.caption}
+                aria-label={shot.caption}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                role="tab"
+              >
+                <img src={shot.src} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+    )}
+
+    <!-- ── Metrics ────────────────────────────────────────────── -->
+    {detail.metrics && detail.metrics.length > 0 && (
+      <section class="modal-metrics" aria-label="Key numbers">
+        {detail.metrics.map((m) => (
+          <div class="modal-metric">
+            <p class="modal-metric-value">{m.value}</p>
+            <p class="modal-metric-label">{m.label}</p>
+          </div>
+        ))}
+      </section>
+    )}
+
+    <!-- ── Overview ───────────────────────────────────────────── -->
+    {detail.overview && detail.overview.length > 0 && (
+      <section class="modal-section">
+        <h3 class="modal-h3">Overview</h3>
+        {detail.overview.map((p) => <p class="modal-prose">{p}</p>)}
+      </section>
+    )}
+
+    <!-- ── Features ───────────────────────────────────────────── -->
+    {detail.features && detail.features.length > 0 && (
+      <section class="modal-section">
+        <h3 class="modal-h3">What it does</h3>
+        <ul class="modal-feature-list">
+          {detail.features.map((f) => (
+            <li>
+              <span class="modal-feature-dot" aria-hidden="true"></span>
+              <div>
+                <p class="modal-feature-title">{f.title}</p>
+                <p class="modal-feature-detail">{f.detail}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- ── Challenges ─────────────────────────────────────────── -->
+    {detail.challenges && detail.challenges.length > 0 && (
+      <section class="modal-section">
+        <h3 class="modal-h3">Engineering challenges</h3>
+        <div class="modal-challenges">
+          {detail.challenges.map((c) => (
+            <div class="modal-challenge">
+              <p class="modal-challenge-title">{c.title}</p>
+              <p class="modal-challenge-line"><span class="modal-challenge-key">Problem</span>{c.problem}</p>
+              <p class="modal-challenge-line"><span class="modal-challenge-key">Approach</span>{c.outcome}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- ── Stack ──────────────────────────────────────────────── -->
+    {detail.stack && detail.stack.length > 0 && (
+      <section class="modal-section">
+        <h3 class="modal-h3">Stack &amp; why</h3>
+        <ul class="modal-stack">
+          {detail.stack.map((s) => (
+            <li>
+              <span class="modal-stack-name">{s.name}</span>
+              <span class="modal-stack-why">{s.why}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <!-- ── Footer links ───────────────────────────────────────── -->
+    {(liveUrl || githubUrl) && (
+      <footer class="modal-footer">
+        {liveUrl && (
+          <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="modal-cta">
+            Visit the live dashboard <span aria-hidden="true">→</span>
+          </a>
+        )}
+        {githubUrl && (
+          <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="modal-ghlink">
+            View source on GitHub ↗
+          </a>
+        )}
+      </footer>
+    )}
+  </article>
+</dialog>
+
+<style>
+  /* Theme-resolved accent: --cat picks the light or dark surface step */
+  .project-modal {
+    --cat: var(--cat-l);
+  }
+  :global(.dark) .project-modal {
+    --cat: var(--cat-d);
+  }
+
+  /* ── Dialog shell ─────────────────────────────────────────────
+     The native <dialog> centres itself; we size it and let the card
+     inside scroll. Closed state is display:none (browser default). */
+  .project-modal {
+    width: min(920px, calc(100vw - 2rem));
+    max-height: calc(100vh - 3rem);
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    background: theme('colors.day.50');
+    color: theme('colors.ink.DEFAULT');
+    box-shadow: 0 30px 80px -20px rgba(22, 21, 29, 0.45);
+  }
+  :global(.dark) .project-modal {
+    background: theme('colors.night.900');
+    color: theme('colors.frost.DEFAULT');
+    box-shadow: 0 30px 90px -20px rgba(0, 0, 0, 0.75);
+  }
+  .project-modal::backdrop {
+    background: rgba(22, 21, 29, 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  /* Open animation — fade + rise; collapses under reduced motion */
+  .project-modal[open] {
+    animation: modal-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes modal-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-accent {
+    height: 4px;
+    background: var(--cat);
+  }
+
+  /* Inner scroll container */
+  .modal-card {
+    position: relative;
+    max-height: calc(100vh - 3rem - 4px);
+    overflow-y: auto;
+    padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem) 2rem;
+  }
+
+  .modal-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    margin: -0.5rem -0.5rem 0 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    color: theme('colors.ink.mute');
+    background: theme('colors.day.100');
+    transition: color 0.2s ease, background-color 0.2s ease;
+    z-index: 2;
+  }
+  .modal-close:hover {
+    color: theme('colors.ink.DEFAULT');
+    background: theme('colors.day.200');
+  }
+  :global(.dark) .modal-close {
+    color: theme('colors.frost.mute');
+    background: theme('colors.night.800');
+  }
+  :global(.dark) .modal-close:hover {
+    color: theme('colors.frost.DEFAULT');
+    background: theme('colors.night.700');
+  }
+
+  /* ── Header ───────────────────────────────────────────────── */
+  .modal-cat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: theme('fontFamily.mono');
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid theme('colors.day.200');
+  }
+  :global(.dark) .modal-cat-tag {
+    border-color: theme('colors.night.700');
+  }
+  .modal-cat-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--cat);
+  }
+  .modal-title {
+    font-family: theme('fontFamily.display');
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .modal-tagline {
+    margin-top: 0.5rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: theme('colors.ink.soft');
+  }
+  :global(.dark) .modal-tagline {
+    color: theme('colors.frost.soft');
+  }
+  .modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid theme('colors.day.200');
+  }
+  :global(.dark) .modal-meta {
+    border-color: theme('colors.night.700');
+  }
+  .modal-meta dt {
+    font-family: theme('fontFamily.mono');
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: theme('colors.ink.mute');
+    margin-bottom: 0.25rem;
+  }
+  :global(.dark) .modal-meta dt {
+    color: theme('colors.frost.mute');
+  }
+  .modal-meta dd {
+    font-size: 0.875rem;
+    color: theme('colors.ink.soft');
+  }
+  :global(.dark) .modal-meta dd {
+    color: theme('colors.frost.soft');
+  }
+
+  /* ── Gallery ──────────────────────────────────────────────── */
+  .modal-gallery {
+    margin-top: 1.5rem;
+  }
+  .gallery-stage {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid theme('colors.day.200');
+    background: theme('colors.day.100');
+  }
+  :global(.dark) .gallery-stage {
+    border-color: theme('colors.night.700');
+    background: theme('colors.night.800');
+  }
+  .gallery-main-img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+  }
+  .gallery-caption {
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: theme('colors.ink.soft');
+    border-top: 1px solid theme('colors.day.200');
+  }
+  :global(.dark) .gallery-caption {
+    color: theme('colors.frost.soft');
+    border-color: theme('colors.night.700');
+  }
+  .gallery-thumbs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  .gallery-thumb {
+    flex: 0 0 auto;
+    width: 104px;
+    aspect-ratio: 16 / 10;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+  }
+  .gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .gallery-thumb:hover {
+    opacity: 0.9;
+  }
+  .gallery-thumb.is-active {
+    opacity: 1;
+    border-color: var(--cat);
+  }
+
+  /* ── Metrics ──────────────────────────────────────────────── */
+  .modal-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .modal-metrics {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .modal-metric {
+    padding: 0.875rem 1rem;
+    border-radius: 10px;
+    background: theme('colors.day.100');
+    border: 1px solid theme('colors.day.200');
+  }
+  :global(.dark) .modal-metric {
+    background: theme('colors.night.800');
+    border-color: theme('colors.night.700');
+  }
+  .modal-metric-value {
+    font-family: theme('fontFamily.display');
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--cat);
+  }
+  .modal-metric-label {
+    margin-top: 0.25rem;
+    font-family: theme('fontFamily.mono');
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: theme('colors.ink.mute');
+  }
+  :global(.dark) .modal-metric-label {
+    color: theme('colors.frost.mute');
+  }
+
+  /* ── Sections ─────────────────────────────────────────────── */
+  .modal-section {
+    margin-top: 2rem;
+  }
+  .modal-h3 {
+    font-family: theme('fontFamily.mono');
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cat);
+    margin-bottom: 0.875rem;
+  }
+  .modal-prose {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: theme('colors.ink.soft');
+  }
+  :global(.dark) .modal-prose {
+    color: theme('colors.frost.soft');
+  }
+  .modal-prose + .modal-prose {
+    margin-top: 0.875rem;
+  }
+
+  /* Features */
+  .modal-feature-list {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .modal-feature-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .modal-feature-list li {
+    display: flex;
+    gap: 0.625rem;
+  }
+  .modal-feature-dot {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    margin-top: 0.5rem;
+    border-radius: 9999px;
+    background: var(--cat);
+  }
+  .modal-feature-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: theme('colors.ink.DEFAULT');
+  }
+  :global(.dark) .modal-feature-title {
+    color: theme('colors.frost.DEFAULT');
+  }
+  .modal-feature-detail {
+    margin-top: 0.125rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: theme('colors.ink.soft');
+  }
+  :global(.dark) .modal-feature-detail {
+    color: theme('colors.frost.soft');
+  }
+
+  /* Challenges */
+  .modal-challenges {
+    display: grid;
+    gap: 1rem;
+  }
+  .modal-challenge {
+    padding: 1rem 1.125rem;
+    border-radius: 10px;
+    border: 1px solid theme('colors.day.200');
+    border-left: 3px solid var(--cat);
+    background: theme('colors.day.100');
+  }
+  :global(.dark) .modal-challenge {
+    border-color: theme('colors.night.700');
+    border-left-color: var(--cat);
+    background: theme('colors.night.800');
+  }
+  .modal-challenge-title {
+    font-weight: 600;
+    font-size: 0.925rem;
+    margin-bottom: 0.5rem;
+    color: theme('colors.ink.DEFAULT');
+  }
+  :global(.dark) .modal-challenge-title {
+    color: theme('colors.frost.DEFAULT');
+  }
+  .modal-challenge-line {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: theme('colors.ink.soft');
+  }
+  :global(.dark) .modal-challenge-line {
+    color: theme('colors.frost.soft');
+  }
+  .modal-challenge-line + .modal-challenge-line {
+    margin-top: 0.375rem;
+  }
+  .modal-challenge-key {
+    display: inline-block;
+    min-width: 4.75rem;
+    font-family: theme('fontFamily.mono');
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cat);
+    margin-right: 0.375rem;
+  }
+
+  /* Stack */
+  .modal-stack {
+    display: grid;
+    gap: 0.625rem;
+  }
+  .modal-stack li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.875rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid theme('colors.day.200');
+  }
+  :global(.dark) .modal-stack li {
+    border-color: theme('colors.night.700');
+  }
+  .modal-stack li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .modal-stack-name {
+    font-family: theme('fontFamily.mono');
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: theme('colors.ink.DEFAULT');
+    min-width: 8.5rem;
+  }
+  :global(.dark) .modal-stack-name {
+    color: theme('colors.frost.DEFAULT');
+  }
+  .modal-stack-why {
+    font-size: 0.85rem;
+    color: theme('colors.ink.soft');
+  }
+  :global(.dark) .modal-stack-why {
+    color: theme('colors.frost.soft');
+  }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  .modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid theme('colors.day.200');
+  }
+  :global(.dark) .modal-footer {
+    border-color: theme('colors.night.700');
+  }
+  .modal-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: theme('fontFamily.mono');
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--cat);
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .modal-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--cat) 60%, transparent);
+  }
+  .modal-ghlink {
+    font-family: theme('fontFamily.mono');
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: theme('colors.ink.mute');
+    transition: color 0.2s ease;
+  }
+  .modal-ghlink:hover {
+    color: theme('colors.ink.DEFAULT');
+  }
+  :global(.dark) .modal-ghlink {
+    color: theme('colors.frost.mute');
+  }
+  :global(.dark) .modal-ghlink:hover {
+    color: theme('colors.frost.DEFAULT');
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-modal[open] {
+      animation: none;
+    }
+  }
+</style>
+
+<!--
+  Modal controller — one delegated script for every dialog on the page:
+  · [data-modal-open="id"] opens the matching <dialog> (showModal → focus trap)
+  · [data-modal-close] and a click on the backdrop close it
+  · scroll-locks the body while any modal is open
+  · gallery: thumbnails swap the main image; ←/→ cycle while open
+-->
+<script>
+  function lockScroll(lock: boolean) {
+    document.body.style.overflow = lock ? 'hidden' : '';
+  }
+
+  // Open
+  document.querySelectorAll<HTMLElement>('[data-modal-open]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const target = document.getElementById(trigger.dataset.modalOpen ?? '');
+      if (target instanceof HTMLDialogElement) {
+        target.showModal();
+        lockScroll(true);
+      }
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.project-modal').forEach((dialog) => {
+    // Close via the ✕ button
+    dialog.querySelector('[data-modal-close]')?.addEventListener('click', () => dialog.close());
+
+    // Close when the backdrop (the dialog element itself) is clicked
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
+    // Restore scroll on any close (button, backdrop, or Esc)
+    dialog.addEventListener('close', () => lockScroll(false));
+
+    // ── Gallery ──
+    const mainImg = dialog.querySelector<HTMLImageElement>('.gallery-main-img');
+    const caption = dialog.querySelector<HTMLElement>('.gallery-caption');
+    const thumbs = Array.from(dialog.querySelectorAll<HTMLButtonElement>('.gallery-thumb'));
+
+    function show(i: number) {
+      const thumb = thumbs[i];
+      if (!thumb || !mainImg) return;
+      const src = thumb.dataset.src ?? '';
+      const cap = thumb.dataset.caption ?? '';
+      mainImg.src = src;
+      mainImg.alt = cap;
+      if (caption) caption.textContent = cap;
+      thumbs.forEach((t, j) => {
+        t.classList.toggle('is-active', j === i);
+        t.setAttribute('aria-selected', String(j === i));
+      });
+    }
+
+    thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => show(i)));
+
+    // Arrow keys cycle the gallery while this dialog is open
+    dialog.addEventListener('keydown', (e) => {
+      if (thumbs.length < 2) return;
+      const active = thumbs.findIndex((t) => t.classList.contains('is-active'));
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        show((active + 1) % thumbs.length);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        show((active - 1 + thumbs.length) % thumbs.length);
+      }
+    });
+  });
+</script>

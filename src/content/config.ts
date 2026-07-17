@@ -48,6 +48,50 @@ const projects = defineCollection({
         label: z.string(),
       })
       .optional(),
+    /**
+     * Optional deep-dive content. When present, the card gains a "Case study"
+     * action that opens an on-page modal built from these fields. Everything
+     * here is optional so a project can fill in as much or as little as it has.
+     */
+    detail: z
+      .object({
+        /** One-line hook shown under the title in the modal header */
+        tagline: z.string().optional(),
+        /** When it was built / how long — e.g. "2025 · self-directed" */
+        timeline: z.string().optional(),
+        /** What Matt personally did — the honest scope line */
+        role: z.string().optional(),
+        /** Overview paragraphs (the "what and why") */
+        overview: z.array(z.string()).optional(),
+        /** Headline numbers for the modal's metric row; values are strings so
+         *  they can carry units ("55 months", "~475 KB gzipped") */
+        metrics: z
+          .array(z.object({ value: z.string(), label: z.string() }))
+          .optional(),
+        /** Screenshot gallery — each shot with a caption used as its alt text */
+        gallery: z
+          .array(z.object({ src: z.string(), caption: z.string() }))
+          .optional(),
+        /** Notable features, each a title + one-line detail */
+        features: z
+          .array(z.object({ title: z.string(), detail: z.string() }))
+          .optional(),
+        /** Engineering challenges: the problem faced and how it was resolved */
+        challenges: z
+          .array(
+            z.object({
+              title: z.string(),
+              problem: z.string(),
+              outcome: z.string(),
+            }),
+          )
+          .optional(),
+        /** Tech choices with the reason each was chosen */
+        stack: z
+          .array(z.object({ name: z.string(), why: z.string() }))
+          .optional(),
+      })
+      .optional(),
   }),
 });
 
