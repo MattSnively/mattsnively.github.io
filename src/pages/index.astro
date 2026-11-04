@@ -13,7 +13,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import ProjectModal from '../components/ProjectModal.astro';
 import { getCollection } from 'astro:content';
 import { CATEGORIES, CATEGORY_MAP } from '../lib/categories';
-import { hero } from '../lib/copy';
+import { hero, skills } from '../lib/copy';
 
 const allProjects = await getCollection('projects');
 const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
@@ -250,6 +250,48 @@ const firstKpi = kpiPool[0];
 
     <!-- Pool for the rotation script; consumed by the KPI script below -->
     <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
+  </section>
+
+  <!-- ─── Skills ───────────────────────────────────────────────────────────
+       One tall row per skill. The script draws each row's rule, slides its
+       title up out of a mask and fades the body in; while scrolling, the row
+       nearest the viewport centre stays at full strength and the rest dim.
+       Without JS or under reduced motion it is a plain, fully readable list. -->
+  <section id="skills" class="skills px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">
+    <p class="font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute mb-3">
+      {skills.label}
+    </p>
+    <div class="flex items-center gap-5 mb-10">
+      <h2 class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost">
+        {skills.heading}
+      </h2>
+      <span class="section-rule flex-1 h-px" aria-hidden="true"></span>
+    </div>
+
+    <ol>
+      {skills.rows.map((row, i) => (
+        <li class="skill-row">
+          <span class="skill-rule block h-px" aria-hidden="true"></span>
+          <div class="grid grid-cols-1 md:grid-cols-[4.5rem_minmax(0,1.7fr)_minmax(0,1fr)] gap-x-8 gap-y-4 py-8 md:py-12 md:items-start">
+            <span class="skill-num font-mono text-xs tracking-widest tabular-nums md:pt-5">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="skill-title font-display font-bold uppercase text-ink dark:text-frost">
+              <span class="skill-title-inner inline-block">{row.title}</span>
+            </h3>
+            <div class="skill-body md:pt-3">
+              <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-4">
+                {row.description}
+              </p>
+              <ul class="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] tracking-wide uppercase text-ink-mute dark:text-frost-mute">
+                {row.tools.map((t) => <li>{t}</li>)}
+              </ul>
+            </div>
+          </div>
+        </li>
+      ))}
+      <li class="skill-row" aria-hidden="true"><span class="skill-rule block h-px"></span></li>
+    </ol>
   </section>
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
@@ -547,6 +589,30 @@ const firstKpi = kpiPool[0];
     }
   }
 
+  /* ── Skills rows ────────────────────────────────────────────────────── */
+  .skill-rule { background: theme('colors.day.200'); transform-origin: left; }
+  :global(.dark) .skill-rule { background: theme('colors.night.700'); }
+  .skill-num { color: var(--brand-a); }
+  .skill-title {
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    /* Mask for the slide-up: clips top/bottom only, so an over-long title
+       spills sideways instead of being cut off mid-letter. */
+    clip-path: inset(0 -100vw);
+    padding-bottom: 0.05em;
+  }
+  .skill-title-inner { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease; }
+  @media (hover: hover) {
+    .skill-row:hover .skill-title-inner { translate: 14px 0; color: var(--brand-a); }
+  }
+  /* Dimming only exists once the script has taken over (.skills-live), so a
+     failed bundle or reduced motion never leaves rows greyed out. */
+  .skills-live .skill-row { transition: opacity 0.4s ease; opacity: 0.32; }
+  .skills-live .skill-row[data-active],
+  .skills-live .skill-row:hover,
+  .skills-live .skill-row:focus-within { opacity: 1; }
+
   /* Rotating slot: its content fades out, the metric swaps, then fades back */
   .kpi-rot-content {
     transition: opacity 0.35s ease;
@@ -708,6 +774,47 @@ const firstKpi = kpiPool[0];
         l1(nx * -36);
       });
     }
+  });
+</script>
+
+<!--
+  Skills motion. Per row: rule draws left→right, title slides up out of its
+  mask, body rises in (once, as the row enters). Separately, the row crossing
+  the middle band of the viewport is marked data-active; CSS dims the others.
+-->
+<script>
+  import { gsap, ScrollTrigger, whenMotionOk } from '../lib/motion';
+
+  whenMotionOk(() => {
+    const section = document.getElementById('skills');
+    if (!section) return;
+    section.classList.add('skills-live');
+
+    section.querySelectorAll<HTMLElement>('.skill-row').forEach((row) => {
+      const rule = row.querySelector('.skill-rule');
+      const title = row.querySelector('.skill-title-inner');
+      const body = row.querySelector('.skill-body');
+      const num = row.querySelector('.skill-num');
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'power4.out' },
+        scrollTrigger: { trigger: row, start: 'top 85%', once: true },
+      });
+      tl.from(rule, { scaleX: 0, duration: 1.1, ease: 'power3.inOut' });
+      if (title) tl.from(title, { yPercent: 110, duration: 0.9 }, 0.15);
+      if (num) tl.from(num, { opacity: 0, x: -10, duration: 0.6 }, 0.25);
+      if (body) tl.from(body, { y: 24, opacity: 0, duration: 0.8 }, 0.35);
+
+      ScrollTrigger.create({
+        trigger: row,
+        start: 'top 62%',
+        end: 'bottom 38%',
+        onToggle: (self) => row.toggleAttribute('data-active', self.isActive),
+      });
+    });
+
+    // Cleanup runs if the visitor flips reduced-motion mid-session.
+    return () => section.classList.remove('skills-live');
   });
 </script>
 
