@@ -483,7 +483,7 @@ const firstKpi = kpiPool[0];
     bottom: -4px;
     width: 100%;
     height: 1.5px;
-    background: linear-gradient(90deg, #2a78d6, #e87ba4);
+    background: linear-gradient(90deg, var(--brand-a), var(--brand-b));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
@@ -511,28 +511,22 @@ const firstKpi = kpiPool[0];
      Shared by the hero name and the featured stat's number, so the page's
      two "full measures" visibly belong together. */
   .gradient-ink {
-    background: linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6);
+    background: var(--brand-grad);
     background-size: 300% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     animation: gradient-pan 9s ease-in-out infinite;
   }
-  :global(.dark) .gradient-ink {
-    background-image: linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
 
   /* ── Primary CTA: gradient fill, lifts on hover ────────────────────── */
   .hero-cta {
-    background: linear-gradient(120deg, #2a78d6, #4a3aa7);
+    background: linear-gradient(120deg, #d62839, #b01e2e);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   .hero-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px -6px rgba(42, 120, 214, 0.5);
+    box-shadow: 0 8px 24px -6px rgba(214, 40, 57, 0.5);
   }
 
   /* ── Hero chart internals ──────────────────────────────────────────── */
@@ -568,7 +562,7 @@ const firstKpi = kpiPool[0];
   /* Dots pop (transform) then float forever (translate — no conflict) */
   .chart-dot {
     fill: #e87ba4;
-    stroke: #fafaf8;               /* 2px surface ring per mark spec */
+    stroke: theme('colors.day.50');             /* 2px surface ring per mark spec */
     stroke-width: 2;
     transform-box: fill-box;
     transform-origin: center;
@@ -577,7 +571,7 @@ const firstKpi = kpiPool[0];
       pop-dot 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
       float-dot var(--float-dur, 5s) ease-in-out infinite;
   }
-  :global(.dark) .chart-dot { fill: #d55181; stroke: #0b0b12; }
+  :global(.dark) .chart-dot { fill: #d55181; stroke: theme('colors.night.950'); }
 
   /* ── Hero visual: chart intro crossfades into the KPI panel ─────────
      Both layers share one grid cell so they overlap; swapping opacity
@@ -659,20 +653,20 @@ const firstKpi = kpiPool[0];
     border: 1px solid transparent;
     background:
       linear-gradient(
-        color-mix(in srgb, #2a78d6 7%, #ffffff),
-        color-mix(in srgb, #2a78d6 7%, #ffffff)
+        color-mix(in srgb, var(--brand-a) 7%, #ffffff),
+        color-mix(in srgb, var(--brand-a) 7%, #ffffff)
       ) padding-box,
-      linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6) border-box;
+      var(--brand-grad) border-box;
     background-size: 100% 100%, 300% 100%;
     animation: gradient-pan 9s ease-in-out infinite;
   }
   :global(.dark) .stat-featured {
     background:
       linear-gradient(
-        color-mix(in srgb, #3987e5 9%, #12121a),
-        color-mix(in srgb, #3987e5 9%, #12121a)
+        color-mix(in srgb, var(--brand-a) 9%, theme('colors.night.900')),
+        color-mix(in srgb, var(--brand-a) 9%, theme('colors.night.900'))
       ) padding-box,
-      linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5) border-box;
+      var(--brand-grad) border-box;
     background-size: 100% 100%, 300% 100%;
   }
   .stat-kicker {
@@ -683,16 +677,12 @@ const firstKpi = kpiPool[0];
      Identical hues and timing to .gradient-ink; a mask keeps the old
      fade-out toward the right edge. */
   .section-rule {
-    background: linear-gradient(100deg, #2a78d6, #4a3aa7, #e87ba4, #2a78d6);
+    background: var(--brand-grad);
     background-size: 300% 100%;
     animation: gradient-pan 9s ease-in-out infinite;
     opacity: 0.55;
     mask-image: linear-gradient(90deg, black 0%, black 45%, transparent 100%);
     -webkit-mask-image: linear-gradient(90deg, black 0%, black 45%, transparent 100%);
-  }
-  :global(.dark) .section-rule {
-    background-image: linear-gradient(100deg, #3987e5, #9085e9, #d55181, #3987e5);
-    background-size: 300% 100%;
   }
 
   /* ── Filter chips (the legend) ─────────────────────────────────────── */

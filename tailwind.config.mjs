@@ -19,26 +19,42 @@ export default {
       colors: {
         /*
          * Neutral surfaces.
-         * "night" = dark-mode surfaces (deep blue-black, not pure gray, so the
-         * category hues glow against it); "day" = light-mode surfaces.
+         * "night" = dark-mode surfaces, stepped up from the brand navy
+         * (#13293D = 950); "day" = light-mode surfaces on crisp white.
          */
         night: {
-          950: '#0b0b12', // page background (dark)
-          900: '#12121a', // chart/card surface (dark) — validated vs palette
-          800: '#1a1a26', // raised surface / tag chips (dark)
-          700: '#262636', // hairline borders (dark)
-          600: '#3a3a4e', // strong borders / hover borders (dark)
+          950: '#13293d', // page background (dark) — brand navy
+          900: '#1a3349', // chart/card surface (dark)
+          800: '#213d55', // raised surface / tag chips (dark)
+          700: '#2c4b66', // hairline borders (dark)
+          600: '#3d6080', // strong borders / hover borders (dark)
         },
         day: {
-          50:  '#fafaf8', // page background (light) — validated vs palette
-          100: '#f2f1ec', // raised surface / tag chips (light)
-          200: '#e6e4db', // hairline borders (light)
-          300: '#d2cfc2', // strong borders / hover borders (light)
+          50:  '#ffffff', // page background (light)
+          100: '#f3f6f9', // raised surface / tag chips (light)
+          200: '#e2e8ee', // hairline borders (light)
+          300: '#c9d3dc', // strong borders / hover borders (light)
         },
 
-        /* Text inks — one trio per mode */
-        ink:   { DEFAULT: '#16151d', soft: '#565360', mute: '#8b8894' }, // on light
-        frost: { DEFAULT: '#f2f2f5', soft: '#b8b6c2', mute: '#82808e' }, // on dark
+        /* Text inks — one trio per mode, navy-tinted so they sit with the brand */
+        ink:   { DEFAULT: '#13293d', soft: '#4a5d6e', mute: '#7b8b99' }, // on light
+        frost: { DEFAULT: '#f4f8fb', soft: '#b5c4d1', mute: '#8497a8' }, // on dark
+
+        /*
+         * Brand accents. Contrast notes (vs. the surface each is used on):
+         *   mint  on navy  ~9.4:1  — text/lines on dark
+         *   teal  on white ~4.9:1  — mint's light-mode stand-in (mint is ~1.6:1 on white)
+         *   red   on navy  ~3:1    — fills and large display type only
+         *   red-d on navy  ~5.4:1  — small text on dark
+         *   white on red   ~5:1    — button labels
+         */
+        brand: {
+          navy:   '#13293d',
+          mint:   '#48e5c2',
+          teal:   '#0b7f69',
+          red:    '#d62839',
+          'red-d': '#ff6b7a',
+        },
 
         /*
          * Category accents — CVD-validated 4-hue categorical palette

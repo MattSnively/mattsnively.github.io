@@ -59,6 +59,24 @@ const {
       bottom of the block — motion-sensitive visitors get a fully static page.
     -->
     <style is:global>
+      /* ── Brand gradient ────────────────────────────────────────────────
+         Accent→ink→accent, theme-resolved (teal/navy on white, mint/white on
+         navy) so gradient text clears contrast. Mixing mint into red passes
+         through muddy grey in sRGB and orange/yellow in oklch, so red stays a
+         solid accent (CTA, glows, nav underline) rather than a gradient stop.
+         Shared by the name, featured stat and section rules. */
+      :root {
+        --brand-a: #0b7f69;
+        --brand-b: #d62839;
+        --brand-ink: #13293d;
+        --brand-grad: linear-gradient(100deg, var(--brand-a), var(--brand-ink), var(--brand-a));
+      }
+      :root.dark {
+        --brand-a: #48e5c2;
+        --brand-b: #ff6b7a;
+        --brand-ink: #f4f8fb;
+      }
+
       /* ── Scroll-reveal ─────────────────────────────────────────────────
          Elements tagged .reveal start invisible and rise into place when
          the IntersectionObserver below adds .in. The hidden initial state
@@ -169,8 +187,8 @@ const {
     ></div>
 
     <!--
-      Background layer 2 — two large blurred color glows (blue + magenta from
-      the category palette) drifting very slowly behind the content. They give
+      Background layer 2 — two large blurred color glows (mint + red from
+      the brand palette) drifting very slowly behind the content. They give
       the page depth (Gestalt figure/ground) without competing with the data.
     -->
     <div aria-hidden="true" class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -181,13 +199,13 @@ const {
     <style>
       /* Dot grid: 1px dots on a 28px lattice, fading out toward the bottom */
       .dot-grid {
-        background-image: radial-gradient(circle, rgba(22, 21, 29, 0.13) 1px, transparent 1px);
+        background-image: radial-gradient(circle, rgba(19, 41, 61, 0.13) 1px, transparent 1px);
         background-size: 28px 28px;
         mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
         -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
       }
       :global(.dark) .dot-grid {
-        background-image: radial-gradient(circle, rgba(242, 242, 245, 0.09) 1px, transparent 1px);
+        background-image: radial-gradient(circle, rgba(244, 248, 251, 0.09) 1px, transparent 1px);
       }
 
       /* Color glows: huge blurred radials in palette hues, barely-there */
@@ -201,20 +219,20 @@ const {
       .glow-a {
         top: -180px;
         right: -120px;
-        background: radial-gradient(circle, rgba(42, 120, 214, 0.16), transparent 70%);
+        background: radial-gradient(circle, rgba(11, 127, 105, 0.13), transparent 70%);
         animation: drift-a 26s ease-in-out infinite;
       }
       .glow-b {
         top: 45%;
         left: -180px;
-        background: radial-gradient(circle, rgba(232, 123, 164, 0.13), transparent 70%);
+        background: radial-gradient(circle, rgba(214, 40, 57, 0.09), transparent 70%);
         animation: drift-b 32s ease-in-out infinite;
       }
       :global(.dark) .glow-a {
-        background: radial-gradient(circle, rgba(57, 135, 229, 0.14), transparent 70%);
+        background: radial-gradient(circle, rgba(72, 229, 194, 0.12), transparent 70%);
       }
       :global(.dark) .glow-b {
-        background: radial-gradient(circle, rgba(213, 81, 129, 0.11), transparent 70%);
+        background: radial-gradient(circle, rgba(214, 40, 57, 0.16), transparent 70%);
       }
     </style>
 
