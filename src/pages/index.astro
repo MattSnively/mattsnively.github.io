@@ -602,9 +602,14 @@ const firstKpi = kpiPool[0];
     clip-path: inset(0 -100vw);
     padding-bottom: 0.05em;
   }
-  .skill-title-inner { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease; }
+  .skill-title { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  .skill-title-inner { transition: color 0.25s ease; }
   @media (hover: hover) {
-    .skill-row:hover .skill-title-inner { translate: 14px 0; color: var(--brand-a); }
+    /* The nudge sits on the mask wrapper: GSAP writes `translate: none` inline on
+     the element it tweens (.skill-title-inner), which would override a hover
+     rule placed there. */
+    .skill-row:hover .skill-title { translate: 14px 0; }
+    .skill-row:hover .skill-title-inner { color: var(--brand-a); }
   }
   /* Dimming only exists once the script has taken over (.skills-live), so a
      failed bundle or reduced motion never leaves rows greyed out. */
@@ -815,6 +820,73 @@ const firstKpi = kpiPool[0];
 
     // Cleanup runs if the visitor flips reduced-motion mid-session.
     return () => section.classList.remove('skills-live');
+  });
+</script>
+
+<!--
+  Work-card motion. Cards enter in scroll-batched waves (rise, un-tilt, scale
+  up, staggered); each screenshot drifts against its card while scrolling
+  (parallax, cover images only — padded logos stay put); and a filter change
+  replays a short re-entry on whatever is now visible. Reduced motion leaves
+  the grid static.
+-->
+<script>
+  import { gsap, ScrollTrigger, whenMotionOk } from '../lib/motion';
+
+  whenMotionOk(() => {
+    const grid = document.getElementById('project-grid');
+    if (!grid) return;
+    const cards = gsap.utils.toArray<HTMLElement>('#project-grid .project-card');
+
+    // Alternate the entry tilt so a row of three fans out instead of marching in step.
+    gsap.set(cards, {
+      opacity: 0,
+      y: 80,
+      scale: 0.95,
+      rotation: (i: number) => (i % 2 === 0 ? -2 : 2),
+      transformOrigin: '50% 100%',
+    });
+
+    ScrollTrigger.batch(cards, {
+      start: 'top 90%',
+      once: true,
+      onEnter: (batch) =>
+        gsap.to(batch, {
+          opacity: 1, y: 0, scale: 1, rotation: 0,
+          duration: 1, ease: 'power3.out', stagger: 0.12, overwrite: true,
+        }),
+    });
+
+    // Parallax: oversize the image slightly so it has room to travel.
+    cards.forEach((card) => {
+      const img = card.querySelector<HTMLElement>('.card-img');
+      if (!img || img.classList.contains('object-contain')) return;
+      gsap.set(img, { scale: 1.14 });
+      gsap.fromTo(
+        img,
+        { yPercent: -5 },
+        {
+          yPercent: 5, ease: 'none',
+          scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: true },
+        },
+      );
+    });
+
+    // Filter change: the legend script toggles .hidden first; replay on what's left.
+    const onFilter = () =>
+      requestAnimationFrame(() => {
+        const visible = cards.filter((c) => !c.classList.contains('hidden'));
+        gsap.fromTo(
+          visible,
+          { opacity: 0, y: 36, scale: 0.97, rotation: 0 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out', stagger: 0.07, overwrite: true },
+        );
+        ScrollTrigger.refresh();
+      });
+    const chips = document.querySelectorAll('.filter-chip');
+    chips.forEach((c) => c.addEventListener('click', onFilter));
+
+    return () => chips.forEach((c) => c.removeEventListener('click', onFilter));
   });
 </script>
 

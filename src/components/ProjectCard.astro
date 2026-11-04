@@ -29,7 +29,7 @@ interface Props {
   /** Id of this project's case-study modal, when it has deep-dive content.
    *  Present → the card shows a "Case study" trigger that opens the modal. */
   detailId?: string | null;
-  /** 0-based grid index — drives the staggered scroll-reveal delay */
+  /** 0-based grid index (reveal stagger is driven by GSAP batching in index.astro) */
   index?: number;
 }
 
@@ -88,7 +88,7 @@ const ICON_COLOR_DARK  = '82808e';
   data-category powers the legend filter on the index page.
 -->
 <article
-  class="project-card group reveal flex flex-col rounded-xl overflow-hidden
+  class="project-card group flex flex-col rounded-xl overflow-hidden
          bg-white dark:bg-night-900
          border border-day-200 dark:border-night-700"
   data-category={category}
@@ -271,7 +271,7 @@ const ICON_COLOR_DARK  = '82808e';
   .project-card {
     --cat: var(--cat-l);
     transition:
-      transform 0.25s ease,
+      translate 0.25s ease,
       border-color 0.25s ease,
       box-shadow 0.25s ease;
   }
@@ -281,8 +281,12 @@ const ICON_COLOR_DARK  = '82808e';
 
   /* Hover: lift + category-colored border and glow. color-mix keeps the
      glow tied to whichever accent the theme resolved. */
+  /* Lift/zoom use the individual `translate` / `scale` properties, not
+     `transform`: GSAP owns `transform` for the scroll reveal and parallax and
+     also writes `translate: none` / `scale: none` inline, so these must be
+     !important to still win on hover. */
   .project-card:hover {
-    transform: translateY(-5px);
+    translate: 0 -5px !important;
     border-color: var(--cat);
     box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--cat) 35%, transparent);
   }
@@ -297,10 +301,10 @@ const ICON_COLOR_DARK  = '82808e';
 
   /* Screenshot zooms slightly on hover — scoped so only the image moves */
   .card-img {
-    transition: transform 0.4s ease;
+    transition: scale 0.4s ease;
   }
   .project-card:hover .card-img {
-    transform: scale(1.045);
+    scale: 1.045 !important;
   }
 
   /* No-screenshot fallback: soft wash of the category hue behind a large
