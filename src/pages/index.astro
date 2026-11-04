@@ -110,15 +110,15 @@ const firstKpi = kpiPool[0];
     below; on mobile it stacks in normal flow. Content is fully visible without
     JS or under reduced motion — the hidden start state is CSS-gated on both.
   -->
-  <section id="top" class="hero relative min-h-[100svh] overflow-hidden flex flex-col md:block">
+  <section id="top" class="hero relative min-h-[100svh] overflow-hidden flex flex-col lg:block">
     <h1
-      class="hero-title relative md:absolute inset-x-0 pt-24 md:pt-0 z-0 px-6 md:px-12
+      class="hero-title relative lg:absolute inset-x-0 pt-24 lg:pt-0 z-0 px-6 lg:px-12
              font-display font-bold uppercase text-ink dark:text-frost"
       aria-label={hero.headline.join(' ')}
       data-hero-fade
     >
       {hero.headline.map((word, i) => (
-        <span class={`hero-line block ${i === 0 ? 'text-right' : 'text-left hero-line-accent'}`} data-line={i} aria-hidden="true">
+        <span class={`hero-line block ${i === 0 ? 'lg:text-right' : 'hero-line-accent'}`} data-line={i} aria-hidden="true">
           <span class="hero-line-inner inline-block">
             {[...word].map((ch) => <span class="hero-char inline-block">{ch}</span>)}
           </span>
@@ -126,7 +126,7 @@ const firstKpi = kpiPool[0];
       ))}
     </h1>
 
-    <div class="hero-stage relative md:absolute md:inset-x-0 md:bottom-0 z-10 mt-4 md:mt-0 flex justify-center pointer-events-none">
+    <div class="hero-stage relative lg:absolute lg:inset-x-0 lg:bottom-0 z-10 mt-4 lg:mt-0 flex justify-center pointer-events-none">
       <div class="hero-figure">
         <img
           src="/images/hero/matt-cutout.webp"
@@ -142,11 +142,11 @@ const firstKpi = kpiPool[0];
 
     <!-- Left flank: sits under the first word -->
     <div
-      class="relative md:absolute md:left-12 md:bottom-14 z-20 px-6 md:px-0 pt-6 md:pt-0 md:max-w-[17rem]"
+      class="relative lg:absolute lg:left-12 lg:bottom-14 z-20 px-6 lg:px-0 pt-6 lg:pt-0 lg:max-w-[17rem]"
       data-hero-flank
       data-hero-fade
     >
-      <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft">
+      <p class="text-base lg:text-lg leading-snug text-ink-soft dark:text-frost-soft">
         {hero.leftBlurb}
       </p>
       <p class="mt-5 font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute">
@@ -156,14 +156,14 @@ const firstKpi = kpiPool[0];
 
     <!-- Right flank: blurb, role tags, links -->
     <div
-      class="relative md:absolute md:right-12 md:bottom-14 z-20 px-6 md:px-0 py-6 md:py-0 md:max-w-[19rem] md:text-right"
+      class="relative lg:absolute lg:right-12 lg:bottom-14 z-20 px-6 lg:px-0 py-6 lg:py-0 lg:max-w-[19rem] lg:text-right"
       data-hero-flank
       data-hero-fade
     >
-      <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5">
+      <p class="text-base lg:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5">
         {hero.rightBlurb}
       </p>
-      <ul class="flex flex-wrap md:justify-end gap-2 mb-5" aria-label="Roles">
+      <ul class="flex flex-wrap lg:justify-end gap-2 mb-5" aria-label="Roles">
         {hero.roles.map((text, i) => {
           const cat = CATEGORIES[[0, 2, 1][i] ?? 0]; // data / apps / civic hues, in role order
           return (
@@ -179,7 +179,7 @@ const firstKpi = kpiPool[0];
           );
         })}
       </ul>
-      <div class="flex flex-wrap md:justify-end gap-3">
+      <div class="flex flex-wrap lg:justify-end gap-3">
         <a
           href="https://github.com/MattSnively"
           target="_blank"
@@ -545,7 +545,7 @@ const firstKpi = kpiPool[0];
      width of the head between them, so the portrait sits between the words
      instead of hiding letters. Mobile stacks the words above the portrait. */
   .hero { --fig-h: min(58svh, 120vw); }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .hero { --fig-h: min(86svh, 70vw); }
   }
   /* The photo is cropped at the thighs; fading the last 10% lets it dissolve
@@ -560,7 +560,7 @@ const firstKpi = kpiPool[0];
     line-height: 0.84;
     letter-spacing: -0.03em;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .hero-title {
       /* Row top = portrait top + 7% of its height (just above the hairline). */
       top: calc(100% - var(--fig-h) * 0.93);
