@@ -4,8 +4,10 @@
  */
 
 export const hero = {
-'HI Y'ALL'
-  headline: ['MATT', 'SNIVELY'] as [string, string],
+  /** TEXT SLOT 1 — the giant type around the portrait. Exactly two short
+   *  words/phrases (≤ ~8 chars each reads best at this size): the first sits
+   *  left of the head, the second right of it. */
+  headline: ['HI', "Y'ALL"] as [string, string],
 
   /** TEXT SLOT 2 — short line under the left word (1–2 sentences). */
   leftBlurb:
