@@ -6,7 +6,9 @@
  * consistently everywhere it appears (card accent, legend chip, footer bar) —
  * the Gestalt similarity principle: same color = same kind of work.
  *
- * Hues come from a CVD-validated categorical palette (see tailwind.config.mjs).
+ * Hues are the brand navy/teal/red plus a neutral gray (the fourth slot),
+ * validated for CVD separation on both surfaces. Gray fails the validator's
+ * chroma floor by design — it is the deliberately quiet category.
  * `light` is the step for the light surface, `dark` for the dark surface —
  * same hue, different lightness step per mode.
  */
@@ -23,10 +25,10 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
-  { id: 'data',  label: 'Data & Analytics', light: '#2a78d6', dark: '#3987e5' },
-  { id: 'civic', label: 'Civic Tech',       light: '#4a3aa7', dark: '#9085e9' },
-  { id: 'apps',  label: 'Apps & Tools',     light: '#1baf7a', dark: '#199e70' },
-  { id: 'play',  label: 'Just for Fun',     light: '#e87ba4', dark: '#d55181' },
+  { id: 'data',  label: 'Data & Analytics', light: '#2358a0', dark: '#4f86c6' },
+  { id: 'civic', label: 'Civic Tech',       light: '#d62839', dark: '#f0525f' },
+  { id: 'apps',  label: 'Apps & Tools',     light: '#08846b', dark: '#1aa886' },
+  { id: 'play',  label: 'Just for Fun',     light: '#8794a1', dark: '#8795a3' },
 ];
 
 /** Fast lookup by id — used by ProjectCard to resolve a project's accent */

@@ -63,10 +63,10 @@ export default {
          * steps of the SAME hues, re-picked for the dark surface.
          */
         cat: {
-          data:      '#2a78d6', 'data-d':  '#3987e5', // blue    — data & analytics
-          civic:     '#4a3aa7', 'civic-d': '#9085e9', // violet  — civic tech
-          apps:      '#1baf7a', 'apps-d':  '#199e70', // aqua    — apps & tools
-          play:      '#e87ba4', 'play-d':  '#d55181', // magenta — just for fun
+          data:      '#2358a0', 'data-d':  '#4f86c6', // navy-blue — data & analytics
+          civic:     '#d62839', 'civic-d': '#f0525f', // red     — civic tech
+          apps:      '#08846b', 'apps-d':  '#1aa886', // teal    — apps & tools
+          play:      '#8794a1', 'play-d':  '#8795a3', // gray    — just for fun
         },
 
         /* Status colors — reserved, never reused as series/category hues */
