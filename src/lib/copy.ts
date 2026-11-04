@@ -4,9 +4,7 @@
  */
 
 export const hero = {
-  /** TEXT SLOT 1 — the giant type around the portrait. Exactly two short
-   *  words/phrases (≤ ~8 chars each reads best at this size): the first sits
-   *  top-left, the second bottom-right, both tucked behind the figure. */
+'HI Y'ALL'
   headline: ['MATT', 'SNIVELY'] as [string, string],
 
   /** TEXT SLOT 2 — short line under the left word (1–2 sentences). */
