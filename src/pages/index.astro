@@ -1,6 +1,6 @@
 ---
 /**
- * Portfolio home page — Nav, animated Hero (self-drawing chart), count-up
+ * Portfolio home page — Nav, animated Hero (portrait + parallax type), count-up
  * Stats strip, filterable Projects grid, About, and a Footer whose divider
  * is a stacked bar chart of the portfolio itself.
  *
@@ -13,6 +13,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import ProjectModal from '../components/ProjectModal.astro';
 import { getCollection } from 'astro:content';
 import { CATEGORIES, CATEGORY_MAP } from '../lib/categories';
+import { hero } from '../lib/copy';
 
 const allProjects = await getCollection('projects');
 const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
@@ -25,10 +26,8 @@ const counts = Object.fromEntries(
 const total = projects.length;
 
 /**
- * Hero KPI panel. The chart plays as an entrance animation, then crossfades
- * out and this panel fades into the same space: one pinned measure (the
- * portfolio itself) plus a single slot that rotates through real, project-
- * sourced metrics. Any project with a `kpi` field joins the rotation and
+ * Stats strip under the hero: one pinned measure (the portfolio itself) plus
+ * a single slot that rotates through real, project-sourced metrics. Any project with a `kpi` field joins the rotation and
  * carries its own category hue, so the pool grows as projects are added.
  */
 const kpiPool = projects
@@ -104,185 +103,153 @@ const firstKpi = kpiPool[0];
   </nav>
 
   <!-- ─── Hero ─────────────────────────────────────────────────────────── -->
-  <section id="top" class="px-6 md:px-12 pt-32 pb-10 max-w-6xl mx-auto w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-14 items-center">
-      <!-- Left: intro copy -->
-      <div>
-        <!-- Role chips — each role wears one of the category hues -->
-        <ul class="flex flex-wrap gap-2 mb-7" aria-label="Roles">
-          {[
-            { text: 'Data Viz Consultant', hueL: '#2358a0', hueD: '#4f86c6' },
-            { text: 'Software Developer',  hueL: '#08846b', hueD: '#1aa886' },
-            { text: 'Data Journalist',     hueL: '#8794a1', hueD: '#8795a3' },
-          ].map((role) => (
+  <!--
+    Portrait cutout in front of giant type. Layers (back→front): the headline
+    words (z-0), the portrait (z-10), the flank text (z-20). On md+ everything
+    is absolutely placed in one viewport-tall stage and animated by the script
+    below; on mobile it stacks in normal flow. Content is fully visible without
+    JS or under reduced motion — the hidden start state is CSS-gated on both.
+  -->
+  <section id="top" class="hero relative min-h-[100svh] overflow-hidden flex flex-col md:block">
+    <h1
+      class="hero-title relative md:absolute inset-x-0 pt-24 md:pt-0 z-0 px-6 md:px-12
+             font-display font-bold uppercase text-ink dark:text-frost"
+      aria-label={hero.headline.join(' ')}
+      data-hero-fade
+    >
+      {hero.headline.map((word, i) => (
+        <span class={`hero-line block ${i === 0 ? 'text-right' : 'text-left hero-line-accent'}`} data-line={i} aria-hidden="true">
+          <span class="hero-line-inner inline-block">
+            {[...word].map((ch) => <span class="hero-char inline-block">{ch}</span>)}
+          </span>
+        </span>
+      ))}
+    </h1>
+
+    <div class="hero-stage relative md:absolute md:inset-x-0 md:bottom-0 z-10 mt-4 md:mt-0 flex justify-center pointer-events-none">
+      <div class="hero-figure">
+        <img
+          src="/images/hero/matt-cutout.webp"
+          width="1159"
+          height="2100"
+          alt="Portrait of Matt Snively"
+          fetchpriority="high"
+          decoding="async"
+          class="hero-img block w-auto select-none"
+        />
+      </div>
+    </div>
+
+    <!-- Left flank: sits under the first word -->
+    <div
+      class="relative md:absolute md:left-12 md:bottom-14 z-20 px-6 md:px-0 pt-6 md:pt-0 md:max-w-[17rem]"
+      data-hero-flank
+      data-hero-fade
+    >
+      <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft">
+        {hero.leftBlurb}
+      </p>
+      <p class="mt-5 font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute">
+        Scroll ↓
+      </p>
+    </div>
+
+    <!-- Right flank: blurb, role tags, links -->
+    <div
+      class="relative md:absolute md:right-12 md:bottom-14 z-20 px-6 md:px-0 py-6 md:py-0 md:max-w-[19rem] md:text-right"
+      data-hero-flank
+      data-hero-fade
+    >
+      <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5">
+        {hero.rightBlurb}
+      </p>
+      <ul class="flex flex-wrap md:justify-end gap-2 mb-5" aria-label="Roles">
+        {hero.roles.map((text, i) => {
+          const cat = CATEGORIES[[0, 2, 1][i] ?? 0]; // data / apps / civic hues, in role order
+          return (
             <li
               class="role-chip inline-flex items-center gap-1.5 font-mono text-[11px] tracking-wide uppercase
                      text-ink-soft dark:text-frost-soft
                      border border-day-200 dark:border-night-700 rounded-full px-3 py-1"
-              style={`--hue-l:${role.hueL}; --hue-d:${role.hueD};`}
+              style={`--hue-l:${cat.light}; --hue-d:${cat.dark};`}
             >
               <span class="w-1.5 h-1.5 rounded-full role-dot" aria-hidden="true"></span>
-              {role.text}
+              {text}
             </li>
-          ))}
-        </ul>
+          );
+        })}
+      </ul>
+      <div class="flex flex-wrap md:justify-end gap-3">
+        <a
+          href="https://github.com/MattSnively"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hero-cta font-mono text-xs font-medium tracking-widest uppercase
+                 text-white rounded-lg px-6 py-3"
+        >
+          GitHub ↗
+        </a>
+        <a
+          href="mailto:mattsnively@gmail.com"
+          class="font-mono text-xs tracking-widest uppercase rounded-lg px-6 py-3
+                 text-ink-soft dark:text-frost-soft
+                 border border-day-200 dark:border-night-700
+                 hover:border-day-300 dark:hover:border-night-600
+                 hover:text-ink dark:hover:text-frost
+                 transition-colors"
+        >
+          Contact →
+        </a>
+      </div>
+    </div>
+  </section>
 
-        <!-- Name in a slow-panning 3-hue gradient (.gradient-ink is shared
-             with the featured stat's number). pb-3 keeps the "y" descender
-             inside the gradient's paint box instead of being cropped by the
-             tight line box. -->
-        <h1 class="gradient-ink font-display text-5xl md:text-7xl font-bold leading-[1.08] pb-3 mb-6">
-          Matt Snively
-        </h1>
-
-        <p class="text-lg md:text-xl leading-relaxed text-ink-soft dark:text-frost-soft max-w-xl mb-9">
-          I turn unstructured data into actionable business insights for my day job, and in my
-          spare time I noodle on various projects that pique my interests: sports, politics, cars,
-          education... if inspiration strikes, there's an "in-progress" project that follows.
+  <!-- ─── Stats strip ─────────────────────────────────────────────────────
+       A pinned measure (the portfolio itself) plus one slot that rotates
+       through project-sourced metrics, each in its project's category hue.
+       Seeded server-side so no-JS visitors see real numbers; the script
+       counts up and starts rotating when the strip scrolls into view. -->
+  <section class="reveal px-6 md:px-12 py-10 max-w-6xl mx-auto w-full">
+    <div class="kpi-panel grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div
+        class="stat-tile stat-featured in rounded-xl p-5"
+        style="--hue-l:#2358a0; --hue-d:#4f86c6;"
+      >
+        <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
+          Shipped
         </p>
-
-        <div class="flex flex-wrap gap-3">
-          <a
-            href="https://github.com/MattSnively"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hero-cta font-mono text-xs font-medium tracking-widest uppercase
-                   text-white rounded-lg px-6 py-3"
-          >
-            GitHub ↗
-          </a>
-          <a
-            href="mailto:mattsnively@gmail.com"
-            class="font-mono text-xs tracking-widest uppercase rounded-lg px-6 py-3
-                   text-ink-soft dark:text-frost-soft
-                   border border-day-200 dark:border-night-700
-                   hover:border-day-300 dark:hover:border-night-600
-                   hover:text-ink dark:hover:text-frost
-                   transition-colors"
-          >
-            Contact →
-          </a>
-        </div>
+        <p class="gradient-ink font-display text-4xl md:text-5xl font-bold tabular-nums">
+          <span class="kpi-pinned-num" data-target={total}>{total}</span>
+        </p>
+        <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
+        <p class="text-xs font-mono tracking-wide uppercase text-ink-soft dark:text-frost-soft">
+          Projects shipped &amp; counting
+        </p>
       </div>
 
-      <!--
-        Right: the chart plays as an entrance animation, then crossfades out
-        and the KPI panel fades into the same grid cell (no layout shift).
-        Chart is purely decorative; the KPI panel is real content.
-      -->
-      <div class="hero-visual">
-        <!--
-          Chart layer. Two lines draw themselves in, bars grow from the
-          baseline, scatter dots pop and float — a living dashboard on the
-          page's graph-paper grid. Decorative, so hidden from assistive tech
-          and from mobile (where the KPI panel stands on its own).
-        -->
-        <div class="hero-chart-layer hidden md:block" aria-hidden="true">
-        <svg viewBox="0 0 480 320" class="w-full h-auto hero-chart" fill="none">
-          <!-- Faint horizontal reference rules -->
-          <line x1="0" y1="80"  x2="480" y2="80"  class="chart-grid" />
-          <line x1="0" y1="160" x2="480" y2="160" class="chart-grid" />
-          <line x1="0" y1="240" x2="480" y2="240" class="chart-grid" />
-          <!-- Baseline -->
-          <line x1="0" y1="300" x2="480" y2="300" class="chart-axis" />
-
-          <!-- Aqua bars, growing from the baseline (staggered) -->
-          {[
-            { x: 24,  h: 60 }, { x: 88,  h: 96 }, { x: 152, h: 74 },
-            { x: 216, h: 128 }, { x: 280, h: 102 }, { x: 344, h: 150 }, { x: 408, h: 122 },
-          ].map((bar, i) => (
-            <rect
-              x={bar.x} y={300 - bar.h} width="34" height={bar.h} rx="4"
-              class="chart-bar"
-              style={`animation-delay: ${0.25 + i * 0.12}s;`}
-            />
-          ))}
-
-          <!-- Blue series line, self-drawing -->
-          <path
-            d="M0 258 C 50 244, 80 262, 120 226 S 190 178, 235 190 S 310 118, 355 128 S 440 84, 480 72"
-            class="chart-line line-blue"
-            pathLength="1"
-          />
-          <!-- Violet series line, self-drawing (later) -->
-          <path
-            d="M0 286 C 60 280, 95 250, 140 252 S 230 226, 270 204 S 360 186, 400 158 S 460 140, 480 128"
-            class="chart-line line-violet"
-            pathLength="1"
-          />
-
-          <!-- Magenta scatter dots — pop in, then drift. Each dot wears a
-               2px surface-colored ring so it reads over bars and lines. -->
-          {[
-            { cx: 70,  cy: 210, d: 1.6 }, { cx: 150, cy: 168, d: 1.75 },
-            { cx: 235, cy: 140, d: 1.9 }, { cx: 300, cy: 172, d: 2.05 },
-            { cx: 370, cy: 96,  d: 2.2 }, { cx: 440, cy: 120, d: 2.35 },
-          ].map((dot, i) => (
-            <circle
-              cx={dot.cx} cy={dot.cy} r="6"
-              class="chart-dot"
-              style={`animation-delay: ${dot.d}s, ${dot.d + 0.5}s; --float-dur: ${4.5 + i * 0.6}s;`}
-            />
-          ))}
-        </svg>
+      <div
+        class="stat-tile kpi-rotator in rounded-xl p-5
+               bg-white dark:bg-night-900
+               border border-day-200 dark:border-night-700"
+        style={firstKpi ? `--hue-l:${firstKpi.hueL}; --hue-d:${firstKpi.hueD};` : undefined}
+      >
+        <div class="kpi-rot-content">
+          <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-2 text-ink-mute dark:text-frost-mute">
+            Data point
+          </p>
+          <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
+            <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : '0'}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
+          </p>
+          <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
+          <p class="kpi-rot-label text-xs font-mono tracking-wide uppercase text-ink-mute dark:text-frost-mute">
+            {firstKpi ? firstKpi.label : ' '}
+          </p>
         </div>
-
-        <!--
-          KPI panel — takes the chart's place after the intro. A pinned
-          measure (the portfolio itself) plus one slot that rotates through
-          real, project-sourced metrics, each wearing its source project's
-          category hue. Starts hidden; the script below reveals it after the
-          chart plays (or immediately on mobile / under reduced motion).
-        -->
-        <div class="kpi-panel flex flex-col gap-4">
-          <!-- Pinned measure: shares the hero name's gradient + "Shipped" kicker.
-               The count (SSR) is the real total so it stands without JS; the
-               script re-animates it from 0 on reveal. -->
-          <div
-            class="stat-tile stat-featured in rounded-xl p-5"
-            style="--hue-l:#2358a0; --hue-d:#4f86c6;"
-          >
-            <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
-              Shipped
-            </p>
-            <p class="gradient-ink font-display text-4xl md:text-5xl font-bold tabular-nums">
-              <span class="kpi-pinned-num" data-target={total}>{total}</span>
-            </p>
-            <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
-            <p class="text-xs font-mono tracking-wide uppercase text-ink-soft dark:text-frost-soft">
-              Projects shipped &amp; counting
-            </p>
-          </div>
-
-          <!-- Rotating slot: one project metric at a time; content crossfades on
-               swap. Seeded with the first metric (SSR) + its hue so it's complete
-               without JS. -->
-          <div
-            class="stat-tile kpi-rotator in rounded-xl p-5
-                   bg-white dark:bg-night-900
-                   border border-day-200 dark:border-night-700"
-            style={firstKpi ? `--hue-l:${firstKpi.hueL}; --hue-d:${firstKpi.hueD};` : undefined}
-          >
-            <div class="kpi-rot-content">
-              <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-2 text-ink-mute dark:text-frost-mute">
-                Data point
-              </p>
-              <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
-                <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : '0'}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
-              </p>
-              <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
-              <p class="kpi-rot-label text-xs font-mono tracking-wide uppercase text-ink-mute dark:text-frost-mute">
-                {firstKpi ? firstKpi.label : ' '}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pool for the rotation script; consumed by the KPI script below -->
-        <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
       </div>
     </div>
 
+    <!-- Pool for the rotation script; consumed by the KPI script below -->
+    <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
   </section>
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
@@ -529,91 +496,57 @@ const firstKpi = kpiPool[0];
     box-shadow: 0 8px 24px -6px rgba(214, 40, 57, 0.5);
   }
 
-  /* ── Hero chart internals ──────────────────────────────────────────── */
-  .chart-grid { stroke: rgba(22, 21, 29, 0.07); stroke-width: 1; }
-  .chart-axis { stroke: rgba(22, 21, 29, 0.18); stroke-width: 1.5; }
-  :global(.dark) .chart-grid { stroke: rgba(242, 242, 245, 0.07); }
-  :global(.dark) .chart-axis { stroke: rgba(242, 242, 245, 0.2); }
-
-  /* Bars grow from their own bottom edge (fill-box makes origin per-bar) */
-  .chart-bar {
-    fill: #08846b;
-    opacity: 0.55;
-    transform-box: fill-box;
-    transform-origin: bottom;
-    transform: scaleY(0);
-    animation: grow-bar 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  /* ── Hero ───────────────────────────────────────────────────────────
+     --fig-h is the portrait height (capped by svh so it fits the stage, and
+     by vw so it never outgrows narrow windows). On md+ the headline is one
+     row at head height: word 1 right-aligned, word 2 left-aligned, a gap the
+     width of the head between them, so the portrait sits between the words
+     instead of hiding letters. Mobile stacks the words above the portrait. */
+  .hero { --fig-h: min(58svh, 120vw); }
+  @media (min-width: 768px) {
+    .hero { --fig-h: min(86svh, 70vw); }
   }
-  :global(.dark) .chart-bar { fill: #1aa886; opacity: 0.6; }
-
-  /* Lines draw in via pathLength=1 + dash animation */
-  .chart-line {
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: draw-line 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  /* The photo is cropped at the thighs; fading the last 10% lets it dissolve
+     into the page instead of ending in a hard edge when scrolled. */
+  .hero-img {
+    height: var(--fig-h);
+    -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
   }
-  .line-blue   { stroke: #2358a0; animation-delay: 0.5s; }
-  .line-violet { stroke: #d62839; animation-delay: 1s; }
-  :global(.dark) .line-blue   { stroke: #4f86c6; }
-  :global(.dark) .line-violet { stroke: #f0525f; }
-
-  /* Dots pop (transform) then float forever (translate — no conflict) */
-  .chart-dot {
-    fill: #8794a1;
-    stroke: theme('colors.day.50');             /* 2px surface ring per mark spec */
-    stroke-width: 2;
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: scale(0);
-    animation:
-      pop-dot 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-      float-dot var(--float-dur, 5s) ease-in-out infinite;
-  }
-  :global(.dark) .chart-dot { fill: #8795a3; stroke: theme('colors.night.950'); }
-
-  /* ── Hero visual: chart intro crossfades into the KPI panel ─────────
-     Both layers share one grid cell so they overlap; swapping opacity
-     causes no layout shift, and the cell reserves the taller layer's
-     height up front. */
-  .hero-visual {
-    display: grid;
-    align-items: center;
-  }
-  .hero-visual > .hero-chart-layer,
-  .hero-visual > .kpi-panel {
-    grid-area: 1 / 1;
-  }
-  /* The chart is decorative and only plays when JS can drive the crossfade;
-     without JS it stays hidden and the populated KPI panel stands alone. */
-  .hero-chart-layer {
-    display: none;
-    transition: opacity 0.6s ease;
+  .hero-title {
+    font-size: clamp(4.25rem, 15vw, 15rem);
+    line-height: 0.84;
+    letter-spacing: -0.03em;
   }
   @media (min-width: 768px) {
-    html.js .hero-chart-layer {
-      display: block;
+    .hero-title {
+      /* Row top = portrait top + 7% of its height (just above the hairline). */
+      top: calc(100% - var(--fig-h) * 0.93);
+      display: grid;
+      /* Portrait is 0.552 as wide as tall; the head is ~0.5 of that width. */
+      grid-template-columns: 1fr calc(var(--fig-h) * 0.3) 1fr;
+      font-size: min(9vw, calc(var(--fig-h) * 0.18));
+      white-space: nowrap;
+    }
+    .hero-line:nth-child(1) { grid-column: 1; }
+    .hero-line:nth-child(2) { grid-column: 3; }
+  }
+  /* Overflow clip is the mask for the char slide-up; bottom padding keeps
+     the line box from shaving the baseline. */
+  .hero-line { overflow: hidden; padding-bottom: 0.04em; }
+  .hero-line-accent { color: var(--brand-a); }
+
+  /* Hidden start state for the entrance timeline. Gated on JS + motion so
+     no-JS and reduced-motion visitors see everything; the delayed fade-in is
+     a failsafe if the bundle never loads. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) [data-hero-fade],
+    :global(html.js) .hero-stage {
+      opacity: 0;
+      animation: fade-in 0.01s 2.5s forwards;
     }
   }
-  .hero-chart-layer.hide {
-    opacity: 0;
-    pointer-events: none;
-  }
-  /* Panel is visible by default (no-JS fallback); with JS it starts hidden so
-     the script can crossfade it in after the chart plays. */
-  .kpi-panel {
-    opacity: 1;
-  }
-  html.js .kpi-panel {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.6s ease;
-  }
-  html.js .kpi-panel.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
+
   /* Rotating slot: its content fades out, the metric swaps, then fades back */
   .kpi-rot-content {
     transition: opacity 0.35s ease;
@@ -622,8 +555,6 @@ const firstKpi = kpiPool[0];
     opacity: 0;
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-chart-layer,
-    .kpi-panel,
     .kpi-rot-content {
       transition: none;
     }
@@ -742,21 +673,55 @@ const firstKpi = kpiPool[0];
 </script>
 
 <!--
-  Hero KPI panel — after the chart plays, crossfade it out and reveal the
-  panel: count the pinned measure up, then rotate the single slot through the
-  project-sourced pool. Reduced-motion and mobile visitors skip the chart
-  intro and get the panel immediately (mobile still rotates; reduced motion
-  holds on the first metric). No-JS visitors: the panel stays hidden — the
-  chart (md+) already conveys the hero visual.
+  Hero motion. Entrance: headline characters slide up out of their line mask,
+  the portrait rises in, flank text follows. Scroll: the two words drift apart
+  and the portrait lags (scrubbed parallax). Pointer (fine pointers only): the
+  words and portrait shift against each other for depth. All of it lives inside
+  whenMotionOk, so reduced-motion visitors get the static layout.
+-->
+<script>
+  import { gsap, whenMotionOk } from '../lib/motion';
+
+  whenMotionOk(() => {
+    gsap.set('[data-hero-fade], .hero-stage', { opacity: 1 });
+
+    gsap
+      .timeline({ defaults: { ease: 'power4.out' } })
+      .from('.hero-char', { yPercent: 115, duration: 1.1, stagger: 0.05 })
+      .from('.hero-img', { yPercent: 7, opacity: 0, scale: 1.04, duration: 1.3 }, 0.2)
+      .from('[data-hero-flank] > *', { y: 24, opacity: 0, duration: 0.9, stagger: 0.08 }, 0.8);
+
+    const scrub = { trigger: '#top', start: 'top top', end: 'bottom top', scrub: 0.6 };
+    gsap.to('.hero-line[data-line="0"]', { xPercent: -12, ease: 'none', scrollTrigger: scrub });
+    gsap.to('.hero-line[data-line="1"]', { xPercent: 12, ease: 'none', scrollTrigger: scrub });
+    gsap.to('.hero-figure', { yPercent: 6, ease: 'none', scrollTrigger: scrub });
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const hero = document.getElementById('top')!;
+      const img = gsap.quickTo('.hero-img', 'x', { duration: 0.8, ease: 'power3.out' });
+      const l0 = gsap.quickTo('.hero-line[data-line="0"] .hero-line-inner', 'x', { duration: 1, ease: 'power3.out' });
+      const l1 = gsap.quickTo('.hero-line[data-line="1"] .hero-line-inner', 'x', { duration: 1, ease: 'power3.out' });
+      hero.addEventListener('pointermove', (e) => {
+        const nx = e.clientX / window.innerWidth - 0.5; // -0.5 … 0.5
+        img(nx * 18);
+        l0(nx * -36);
+        l1(nx * -36);
+      });
+    }
+  });
+</script>
+
+<!--
+  Stats strip — count the pinned measure up when the strip scrolls into view,
+  then rotate the single slot through the project-sourced pool. Reduced motion
+  holds on the first metric.
 -->
 <script>
   interface Kpi { value: number; suffix: string; label: string; hueL: string; hueD: string }
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const mdUp = window.matchMedia('(min-width: 768px)').matches;
 
   const panel = document.querySelector<HTMLElement>('.kpi-panel');
-  const chartLayer = document.querySelector<HTMLElement>('.hero-chart-layer');
   const pinnedNum = document.querySelector<HTMLElement>('.kpi-pinned-num');
   const rotator = document.querySelector<HTMLElement>('.kpi-rotator');
   const rotNum = document.querySelector<HTMLElement>('.kpi-rot-num');
@@ -807,19 +772,20 @@ const firstKpi = kpiPool[0];
   }
 
   function revealPanel() {
-    if (!panel) return;
-    panel.classList.add('show');
-    chartLayer?.classList.add('hide');
     if (pinnedNum) countUp(pinnedNum, Number(pinnedNum.dataset.target ?? '0'));
     if (pool.length) applyKpi(0);
     if (!reduceMotion && pool.length > 1) startRotation();
   }
 
-  // On md+ with motion, let the chart play first; otherwise reveal at once.
-  if (!reduceMotion && mdUp && chartLayer) {
-    window.setTimeout(revealPanel, 3000);
-  } else {
-    revealPanel();
+  // Start counting when the strip first scrolls into view (it sits below the fold).
+  if (panel) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        revealPanel();
+      }
+    }, { threshold: 0.4 });
+    io.observe(panel);
   }
 </script>
 
