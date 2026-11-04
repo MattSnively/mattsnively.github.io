@@ -110,15 +110,15 @@ const firstKpi = kpiPool[0];
     below; on mobile it stacks in normal flow. Content is fully visible without
     JS or under reduced motion — the hidden start state is CSS-gated on both.
   -->
-  <section id="top" class="hero relative min-h-[100svh] overflow-hidden flex flex-col lg:block">
+  <section id="top" class="hero relative min-h-[100svh] overflow-hidden flex flex-col xl:block">
     <h1
-      class="hero-title relative lg:absolute inset-x-0 pt-24 lg:pt-0 z-0 px-6 lg:px-12
+      class="hero-title relative xl:absolute inset-x-0 pt-24 xl:pt-0 z-0 px-6 xl:px-12
              font-display font-bold uppercase text-ink dark:text-frost"
       aria-label={hero.headline.join(' ')}
       data-hero-fade
     >
       {hero.headline.map((word, i) => (
-        <span class={`hero-line block ${i === 0 ? 'lg:text-right' : 'hero-line-accent'}`} data-line={i} aria-hidden="true">
+        <span class={`hero-line block ${i % 2 === 0 ? 'xl:text-right' : 'text-right xl:text-left'} ${i === hero.headline.length - 1 ? 'hero-line-accent' : ''}`} data-line={i} aria-hidden="true">
           <span class="hero-line-inner inline-block">
             {[...word].map((ch) => <span class="hero-char inline-block">{ch}</span>)}
           </span>
@@ -126,7 +126,7 @@ const firstKpi = kpiPool[0];
       ))}
     </h1>
 
-    <div class="hero-stage relative lg:absolute lg:inset-x-0 lg:bottom-0 z-10 mt-4 lg:mt-0 flex justify-center pointer-events-none">
+    <div class="hero-stage relative xl:absolute xl:inset-x-0 xl:bottom-0 z-10 mt-4 xl:mt-0 flex justify-center pointer-events-none">
       <div class="hero-figure">
         <img
           src="/images/hero/matt-cutout.webp"
@@ -142,11 +142,11 @@ const firstKpi = kpiPool[0];
 
     <!-- Left flank: sits under the first word -->
     <div
-      class="relative lg:absolute lg:left-12 lg:bottom-14 z-20 px-6 lg:px-0 pt-6 lg:pt-0 lg:max-w-[17rem]"
+      class="relative xl:absolute xl:left-12 xl:bottom-14 z-20 px-6 xl:px-0 pt-6 xl:pt-0 xl:max-w-[17rem]"
       data-hero-flank
       data-hero-fade
     >
-      <p class="text-base lg:text-lg leading-snug text-ink-soft dark:text-frost-soft">
+      <p class="text-base xl:text-lg leading-snug text-ink-soft dark:text-frost-soft">
         {hero.leftBlurb}
       </p>
       <p class="mt-5 font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute">
@@ -156,14 +156,15 @@ const firstKpi = kpiPool[0];
 
     <!-- Right flank: blurb, role tags, links -->
     <div
-      class="relative lg:absolute lg:right-12 lg:bottom-14 z-20 px-6 lg:px-0 py-6 lg:py-0 lg:max-w-[19rem] lg:text-right"
+      class="relative xl:contents px-6 py-6"
       data-hero-flank
       data-hero-fade
     >
-      <p class="text-base lg:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5">
+      <p class="text-base xl:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5
+                xl:mb-0 xl:absolute xl:right-12 xl:top-28 z-20 xl:max-w-[19rem] xl:text-right">
         {hero.rightBlurb}
       </p>
-      <ul class="flex flex-wrap lg:justify-end gap-2 mb-5" aria-label="Roles">
+      <ul class="flex flex-wrap gap-2 mb-5 xl:mb-0 xl:absolute xl:left-12 xl:bottom-[15.5rem] z-20 xl:max-w-[17rem]" aria-label="Roles">
         {hero.roles.map((text, i) => {
           const cat = CATEGORIES[[0, 2, 1][i] ?? 0]; // data / apps / civic hues, in role order
           return (
@@ -179,7 +180,7 @@ const firstKpi = kpiPool[0];
           );
         })}
       </ul>
-      <div class="flex flex-wrap lg:justify-end gap-3">
+      <div class="flex flex-wrap gap-3 xl:absolute xl:left-12 xl:bottom-[12rem] z-20">
         <a
           href="https://github.com/MattSnively"
           target="_blank"
@@ -545,7 +546,7 @@ const firstKpi = kpiPool[0];
      width of the head between them, so the portrait sits between the words
      instead of hiding letters. Mobile stacks the words above the portrait. */
   .hero { --fig-h: min(58svh, 120vw); }
-  @media (min-width: 1024px) {
+  @media (min-width: 1280px) {
     .hero { --fig-h: min(86svh, 70vw); }
   }
   /* The photo is cropped at the thighs; fading the last 10% lets it dissolve
@@ -555,23 +556,34 @@ const firstKpi = kpiPool[0];
     -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
     mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
   }
+  /* Mobile: two zig-zag pairs ("HI … Y'ALL," / "I'M … MATT"). */
   .hero-title {
-    font-size: clamp(4.25rem, 15vw, 15rem);
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    font-size: clamp(2.75rem, 14vw, 7rem);
     line-height: 0.84;
     letter-spacing: -0.03em;
   }
-  @media (min-width: 1024px) {
+  @media (min-width: 1280px) {
     .hero-title {
-      /* Row top = portrait top + 7% of its height (just above the hairline). */
+      /* Block top = portrait top + 7% of its height (just above the hairline). */
       top: calc(100% - var(--fig-h) * 0.93);
-      display: grid;
-      /* Portrait is 0.552 as wide as tall; the head is ~0.5 of that width. */
+      height: calc(var(--fig-h) * 0.72);
+      /* Four words step down the portrait, alternating sides like a staircase.
+         Portrait is 0.552 as wide as tall; the head is ~0.5 of that width. */
       grid-template-columns: 1fr calc(var(--fig-h) * 0.3) 1fr;
-      font-size: min(9vw, calc(var(--fig-h) * 0.18));
+      grid-template-rows: repeat(4, 1fr);
+      justify-content: normal;
+      align-items: center;
+      font-size: min(10vw, calc(var(--fig-h) * 0.22));
       white-space: nowrap;
     }
-    .hero-line:nth-child(1) { grid-column: 1; }
-    .hero-line:nth-child(2) { grid-column: 3; }
+    .hero-line:nth-child(1) { grid-area: 1 / 1; }
+    .hero-line:nth-child(2) { grid-area: 2 / 3; padding-left: calc(var(--fig-h) * 0.04); }
+    /* Lower rows sit beside the shoulders/torso, which are wider than the head. */
+    .hero-line:nth-child(3) { grid-area: 3 / 1; padding-right: calc(var(--fig-h) * 0.16); }
+    .hero-line:nth-child(4) { grid-area: 4 / 3; padding-left: calc(var(--fig-h) * 0.12); }
   }
   /* Overflow clip is the mask for the char slide-up; bottom padding keeps
      the line box from shaving the baseline. */
@@ -763,20 +775,22 @@ const firstKpi = kpiPool[0];
       .from('[data-hero-flank] > *', { y: 24, opacity: 0, duration: 0.9, stagger: 0.08 }, 0.8);
 
     const scrub = { trigger: '#top', start: 'top top', end: 'bottom top', scrub: 0.6 };
-    gsap.to('.hero-line[data-line="0"]', { xPercent: -12, ease: 'none', scrollTrigger: scrub });
-    gsap.to('.hero-line[data-line="1"]', { xPercent: 12, ease: 'none', scrollTrigger: scrub });
+    // Left-side words (even index) drift left, right-side words drift right.
+    gsap.utils.toArray<HTMLElement>('.hero-line').forEach((el, i) => {
+      gsap.to(el, { xPercent: i % 2 ? 12 : -12, ease: 'none', scrollTrigger: scrub });
+    });
     gsap.to('.hero-figure', { yPercent: 6, ease: 'none', scrollTrigger: scrub });
 
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const hero = document.getElementById('top')!;
       const img = gsap.quickTo('.hero-img', 'x', { duration: 0.8, ease: 'power3.out' });
-      const l0 = gsap.quickTo('.hero-line[data-line="0"] .hero-line-inner', 'x', { duration: 1, ease: 'power3.out' });
-      const l1 = gsap.quickTo('.hero-line[data-line="1"] .hero-line-inner', 'x', { duration: 1, ease: 'power3.out' });
+      const words = gsap.utils
+        .toArray<HTMLElement>('.hero-line-inner')
+        .map((el) => gsap.quickTo(el, 'x', { duration: 1, ease: 'power3.out' }));
       hero.addEventListener('pointermove', (e) => {
         const nx = e.clientX / window.innerWidth - 0.5; // -0.5 … 0.5
         img(nx * 18);
-        l0(nx * -36);
-        l1(nx * -36);
+        words.forEach((move) => move(nx * -36));
       });
     }
   });
