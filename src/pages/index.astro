@@ -140,31 +140,19 @@ const firstKpi = kpiPool[0];
       </div>
     </div>
 
-    <!-- Left flank: sits under the first word -->
+    <!-- Secondary text: one column bottom-left on wide screens (blurbs, role tags, links) -->
     <div
-      class="relative xl:absolute xl:left-12 xl:bottom-14 z-20 px-6 xl:px-0 pt-6 xl:pt-0 xl:max-w-[17rem]"
+      class="relative xl:absolute xl:left-12 xl:bottom-14 z-20 px-6 xl:px-0 pt-6 xl:pt-0 xl:max-w-[13rem]"
       data-hero-flank
       data-hero-fade
     >
-      <p class="text-base xl:text-lg leading-snug text-ink-soft dark:text-frost-soft">
+      <p class="text-base leading-snug text-ink-soft dark:text-frost-soft">
         {hero.leftBlurb}
       </p>
-      <p class="mt-5 font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute">
-        Scroll ↓
-      </p>
-    </div>
-
-    <!-- Right flank: blurb, role tags, links -->
-    <div
-      class="relative xl:contents px-6 py-6"
-      data-hero-flank
-      data-hero-fade
-    >
-      <p class="text-base xl:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5
-                xl:mb-0 xl:absolute xl:right-12 xl:top-28 z-20 xl:max-w-[19rem] xl:text-right">
+      <p class="mt-3 text-base leading-snug text-ink-soft dark:text-frost-soft">
         {hero.rightBlurb}
       </p>
-      <ul class="flex flex-wrap gap-2 mb-5 xl:mb-0 xl:absolute xl:left-12 xl:bottom-[15.5rem] z-20 xl:max-w-[17rem]" aria-label="Roles">
+      <ul class="flex flex-wrap gap-2 mt-5" aria-label="Roles">
         {hero.roles.map((text, i) => {
           const cat = CATEGORIES[[0, 2, 1][i] ?? 0]; // data / apps / civic hues, in role order
           return (
@@ -180,19 +168,19 @@ const firstKpi = kpiPool[0];
           );
         })}
       </ul>
-      <div class="flex flex-wrap gap-3 xl:absolute xl:left-12 xl:bottom-[12rem] z-20">
+      <div class="flex flex-wrap gap-2 mt-5">
         <a
           href="https://github.com/MattSnively"
           target="_blank"
           rel="noopener noreferrer"
           class="hero-cta font-mono text-xs font-medium tracking-widest uppercase
-                 text-white rounded-lg px-6 py-3"
+                 text-white rounded-lg px-5 py-3"
         >
           GitHub ↗
         </a>
         <a
           href="mailto:mattsnively@gmail.com"
-          class="font-mono text-xs tracking-widest uppercase rounded-lg px-6 py-3
+          class="font-mono text-xs tracking-widest uppercase rounded-lg px-5 py-3
                  text-ink-soft dark:text-frost-soft
                  border border-day-200 dark:border-night-700
                  hover:border-day-300 dark:hover:border-night-600
@@ -202,6 +190,9 @@ const firstKpi = kpiPool[0];
           Contact →
         </a>
       </div>
+      <p class="mt-5 font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute">
+        Scroll ↓
+      </p>
     </div>
   </section>
 
