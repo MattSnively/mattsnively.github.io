@@ -4,6 +4,8 @@
  * dark-mode init, global animation keyframes, and the scroll-reveal observer.
  * All pages wrap their content in this layout.
  */
+import Cursor from '../components/Cursor.astro';
+
 interface Props {
   title?: string;
   description?: string;
@@ -239,6 +241,8 @@ const {
     <div class="relative z-10">
       <slot />
     </div>
+
+    <Cursor />
 
     <!--
       Scroll-reveal observer — adds .in to every .reveal element the first

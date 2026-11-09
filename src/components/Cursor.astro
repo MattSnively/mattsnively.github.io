@@ -1,0 +1,142 @@
+---
+/**
+ * Custom cursor: a ball with a fading tail that swells and shows "Open" over
+ * project cards that have a case study. Fine pointers + motion-OK only — the
+ * script adds `html.has-cursor` (which hides the native cursor) and removes it
+ * on cleanup, so touch, keyboard and reduced-motion visitors are untouched.
+ */
+const TAIL = 5;
+---
+
+<div class="cur" aria-hidden="true">
+  {Array.from({ length: TAIL }, (_, i) => (
+    <span class="cur-tail" style={`--i:${i}`}></span>
+  ))}
+  <span class="cur-lead"><span class="cur-label">Open</span></span>
+</div>
+
+<style is:global>
+  .cur { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
+  .cur-lead,
+  .cur-tail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 9999px;
+    background: var(--brand-a);
+    opacity: 0; /* revealed on first pointer move */
+    will-change: transform;
+  }
+  .cur-lead {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: theme('fontFamily.mono');
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  html.dark .cur-lead { color: #13293d; }
+  .cur-label { opacity: 0; }
+  /* Tail dots shrink and fade along the chain */
+  .cur-tail {
+    width: calc(11px - var(--i) * 1.6px);
+    height: calc(11px - var(--i) * 1.6px);
+  }
+  html.has-cursor,
+  html.has-cursor * { cursor: none !important; }
+</style>
+
+<script>
+  import { gsap } from '../lib/motion';
+
+  gsap
+    .matchMedia()
+    .add('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
+      const root = document.documentElement;
+      const lead = document.querySelector<HTMLElement>('.cur-lead')!;
+      const label = lead.querySelector<HTMLElement>('.cur-label')!;
+      const tails = [...document.querySelectorAll<HTMLElement>('.cur-tail')];
+      const all = [lead, ...tails];
+
+      // Each dot chases the one in front of it; the lead chases the pointer.
+      const pos = all.map(() => ({ x: -100, y: -100 }));
+      const mouse = { x: -100, y: -100 };
+      let shown = false;
+      let state: 'dot' | 'link' | 'open' = 'dot';
+
+      gsap.set(all, { xPercent: -50, yPercent: -50 });
+
+      const setState = (next: typeof state) => {
+        if (next === state) return;
+        state = next;
+        const size = next === 'open' ? 84 : next === 'link' ? 28 : 14;
+        gsap.to(lead, { width: size, height: size, duration: 0.35, ease: 'power3.out' });
+        gsap.to(label, { opacity: next === 'open' ? 1 : 0, duration: 0.2 });
+        gsap.to(tails, { opacity: next === 'open' ? 0 : 0.55, duration: 0.25 });
+      };
+
+      const classify = (el: Element | null) => {
+        if (!el) return 'dot';
+        const control = el.closest('a, button, [role="button"], summary');
+        if (control && !control.matches('[data-modal-open]')) return 'link';
+        const card = el.closest('.project-card');
+        if (card?.querySelector('[data-modal-open]')) return 'open';
+        return control ? 'link' : 'dot';
+      };
+
+      const onMove = (e: PointerEvent) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        // Native <dialog> modals live in the top layer above the cursor, so
+        // fall back to the real cursor while one is open.
+        const modalOpen = !!document.querySelector('dialog[open]');
+        root.classList.toggle('has-cursor', !modalOpen);
+        if (modalOpen) {
+          gsap.set(all, { opacity: 0 });
+          shown = false;
+          return;
+        }
+        if (!shown) {
+          shown = true;
+          pos.forEach((p) => ((p.x = mouse.x), (p.y = mouse.y)));
+          gsap.set(lead, { opacity: 1 });
+          gsap.set(tails, { opacity: state === 'open' ? 0 : 0.55 });
+        }
+        setState(classify(e.target as Element));
+      };
+      const onLeave = () => {
+        shown = false;
+        gsap.set(all, { opacity: 0 });
+      };
+
+      const tick = () => {
+        if (!shown) return;
+        pos.forEach((p, i) => {
+          const tx = i === 0 ? mouse.x : pos[i - 1].x;
+          const ty = i === 0 ? mouse.y : pos[i - 1].y;
+          const k = i === 0 ? 0.35 : 0.42;
+          p.x += (tx - p.x) * k;
+          p.y += (ty - p.y) * k;
+          gsap.set(all[i], { x: p.x, y: p.y });
+        });
+      };
+
+      root.classList.add('has-cursor');
+      window.addEventListener('pointermove', onMove, { passive: true });
+      document.documentElement.addEventListener('pointerleave', onLeave);
+      gsap.ticker.add(tick);
+
+      return () => {
+        root.classList.remove('has-cursor');
+        window.removeEventListener('pointermove', onMove);
+        document.documentElement.removeEventListener('pointerleave', onLeave);
+        gsap.ticker.remove(tick);
+        gsap.set(all, { clearProps: 'all' });
+      };
+    });
+</script>

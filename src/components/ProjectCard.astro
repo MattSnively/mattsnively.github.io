@@ -362,6 +362,8 @@ const ICON_COLOR_DARK  = '82808e';
     transform: translateY(6px);
     transition: opacity 0.25s ease, transform 0.25s ease;
   }
+  /* The custom cursor says "Open" itself, so drop the pill while it's active */
+  :global(html.has-cursor) .card-media-hint { display: none; }
   /* Reveal on card hover or keyboard focus of the trigger */
   .project-card:hover .card-media-trigger::before,
   .card-media-trigger:focus-visible::before {
