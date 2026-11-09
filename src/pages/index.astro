@@ -971,19 +971,26 @@ const firstKpi = kpiPool[0];
     countUp(num, k.value);
   }
 
+  /** Count-up duration (ms) plus how long each number then holds before swapping */
+  const COUNT_MS = 1100;
+  const HOLD_MS = 3000;
+
+  function scheduleNext() {
+    window.setTimeout(() => {
+      if (document.hidden) return scheduleNext();
+      ticker!.classList.add('swapping'); // fade out, swap, fade in
+      window.setTimeout(() => {
+        idx = (idx + 1) % pool.length;
+        applyKpi(idx);
+        ticker!.classList.remove('swapping');
+        scheduleNext();
+      }, 350);
+    }, COUNT_MS + HOLD_MS);
+  }
+
   if (ticker && pool.length) {
     applyKpi(0);
-    if (!reduceMotion && pool.length > 1) {
-      window.setInterval(() => {
-        if (document.hidden) return;
-        ticker.classList.add('swapping'); // fade out, swap, fade in
-        window.setTimeout(() => {
-          idx = (idx + 1) % pool.length;
-          applyKpi(idx);
-          ticker.classList.remove('swapping');
-        }, 350);
-      }, 4200);
-    }
+    if (!reduceMotion && pool.length > 1) scheduleNext();
   }
 </script>
 
