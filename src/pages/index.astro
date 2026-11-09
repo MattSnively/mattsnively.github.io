@@ -227,6 +227,8 @@ const firstKpi = kpiPool[0];
 
       <div class="skills-right">
         <ol class="skills-list">
+          <!-- Blank lead-in row (live mode only) so the stepper opens empty and Data Viz scrolls in -->
+          <li class="skill-row skill-spacer" aria-hidden="true"></li>
           {skills.rows.map((row, i) => (
             <li class="skill-row">
               <span class="skill-rule block h-px" aria-hidden="true"></span>
@@ -620,20 +622,24 @@ const firstKpi = kpiPool[0];
     line-height: 0.95;
     letter-spacing: -0.02em;
   }
-  .skills-descs { display: none; }
+  .skills-descs, .skill-spacer { display: none; }
 
   /* Pull the stage up under the hero and pin it a little below the top, so
      there is no empty screen between the hero and the skills. */
-  .skills.skills-live { padding-top: 0; padding-bottom: 0; margin-top: -4rem; margin-bottom: -6rem; }
+  .skills.skills-live {
+    padding-top: 0; padding-bottom: 0; margin-top: -4rem; margin-bottom: -6rem;
+    max-width: 90rem; /* wider than the page column so the big titles never clip */
+  }
   .skills-live .skills-stage {
-    height: 84svh;
-    min-height: 32rem;
+    --stage-h: max(84svh, 32rem);
+    height: var(--stage-h);
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: 4rem;
-    align-items: center;
+    align-items: start;
   }
-  .skills-live .skills-left { text-align: right; }
+  /* Left text starts on the same line as the active (focus) title on the right. */
+  .skills-live .skills-left { text-align: right; margin-top: calc(var(--stage-h) * 0.3 + 0.75rem); }
   .skills-live .skills-heading {
     font-size: clamp(1.75rem, 2.9vw, 2.75rem);
     line-height: 1;
@@ -653,13 +659,17 @@ const firstKpi = kpiPool[0];
      the active title stays on a fixed line near the top of the window. */
   .skills-live .skills-right {
     position: relative;
-    height: 74svh;
+    height: var(--stage-h);
     overflow: hidden;
+    container-type: inline-size;
+    /* Safety net: shrink titles if the column is ever narrower than the longest one */
+    --skill-fs: min(clamp(2.75rem, 6.2vw, 6.5rem), 15cqw);
     -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 85%, transparent);
     mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 85%, transparent);
   }
-  .skills-live .skills-list { position: absolute; top: 26%; left: 0; right: 0; }
+  .skills-live .skills-list { position: absolute; top: 30%; left: 0; right: 0; }
   .skills-live .skill-row { height: calc(var(--skill-fs) * 1.25); }
+  .skills-live .skill-spacer { display: block; }
   .skills-live .skill-title { white-space: nowrap; line-height: 1.25; }
   .skills-live .skill-rule,
   .skills-live .skill-num,
@@ -848,7 +858,7 @@ const firstKpi = kpiPool[0];
       const stage = section.querySelector<HTMLElement>('.skills-stage')!;
       const list = section.querySelector<HTMLElement>('.skills-list')!;
       const items = [...section.querySelectorAll<HTMLElement>('.skill-row')];
-      const descs = [...section.querySelectorAll<HTMLElement>('.skills-desc')];
+      const descs = [...section.querySelectorAll<HTMLElement>('.skills-desc')]; // descs[i] belongs to items[i + 1]; items[0] is the blank lead-in
       const n = items.length;
       let rowH = items[0].offsetHeight;
 
@@ -861,7 +871,7 @@ const firstKpi = kpiPool[0];
           el.style.filter = t < 0.04 ? '' : `blur(${(t * 7).toFixed(1)}px)`;
           el.toggleAttribute('data-active', i === active);
         });
-        descs.forEach((el, i) => el.toggleAttribute('data-active', i === active));
+        descs.forEach((el, i) => el.toggleAttribute('data-active', i + 1 === active));
       };
 
       const state = { p: 0 };
