@@ -196,54 +196,6 @@ const firstKpi = kpiPool[0];
     </div>
   </section>
 
-  <!-- ─── Stats strip ─────────────────────────────────────────────────────
-       A pinned measure (the portfolio itself) plus one slot that rotates
-       through project-sourced metrics, each in its project's category hue.
-       Seeded server-side so no-JS visitors see real numbers; the script
-       counts up and starts rotating when the strip scrolls into view. -->
-  <section class="reveal px-6 md:px-12 py-10 max-w-6xl mx-auto w-full">
-    <div class="kpi-panel grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div
-        class="stat-tile stat-featured in rounded-xl p-5"
-        style="--hue-l:#2358a0; --hue-d:#4f86c6;"
-      >
-        <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
-          Shipped
-        </p>
-        <p class="gradient-ink font-display text-4xl md:text-5xl font-bold tabular-nums">
-          <span class="kpi-pinned-num" data-target={total}>{total}</span>
-        </p>
-        <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
-        <p class="text-xs font-mono tracking-wide uppercase text-ink-soft dark:text-frost-soft">
-          Projects shipped &amp; counting
-        </p>
-      </div>
-
-      <div
-        class="stat-tile kpi-rotator in rounded-xl p-5
-               bg-white dark:bg-night-900
-               border border-day-200 dark:border-night-700"
-        style={firstKpi ? `--hue-l:${firstKpi.hueL}; --hue-d:${firstKpi.hueD};` : undefined}
-      >
-        <div class="kpi-rot-content">
-          <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-2 text-ink-mute dark:text-frost-mute">
-            Data point
-          </p>
-          <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
-            <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : '0'}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
-          </p>
-          <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
-          <p class="kpi-rot-label text-xs font-mono tracking-wide uppercase text-ink-mute dark:text-frost-mute">
-            {firstKpi ? firstKpi.label : ' '}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pool for the rotation script; consumed by the KPI script below -->
-    <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
-  </section>
-
   <!-- ─── Skills ───────────────────────────────────────────────────────────
        Wide screens with motion: the stage pins and scrolling steps through the
        skills. The big list sits on the right (active title sharp, the rest
@@ -299,6 +251,54 @@ const firstKpi = kpiPool[0];
         </ol>
       </div>
     </div>
+  </section>
+
+  <!-- ─── Stats strip ─────────────────────────────────────────────────────
+       A pinned measure (the portfolio itself) plus one slot that rotates
+       through project-sourced metrics, each in its project's category hue.
+       Seeded server-side so no-JS visitors see real numbers; the script
+       counts up and starts rotating when the strip scrolls into view. -->
+  <section class="reveal px-6 md:px-12 py-10 max-w-6xl mx-auto w-full">
+    <div class="kpi-panel grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div
+        class="stat-tile stat-featured in rounded-xl p-5"
+        style="--hue-l:#2358a0; --hue-d:#4f86c6;"
+      >
+        <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
+          Shipped
+        </p>
+        <p class="gradient-ink font-display text-4xl md:text-5xl font-bold tabular-nums">
+          <span class="kpi-pinned-num" data-target={total}>{total}</span>
+        </p>
+        <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
+        <p class="text-xs font-mono tracking-wide uppercase text-ink-soft dark:text-frost-soft">
+          Projects shipped &amp; counting
+        </p>
+      </div>
+
+      <div
+        class="stat-tile kpi-rotator in rounded-xl p-5
+               bg-white dark:bg-night-900
+               border border-day-200 dark:border-night-700"
+        style={firstKpi ? `--hue-l:${firstKpi.hueL}; --hue-d:${firstKpi.hueD};` : undefined}
+      >
+        <div class="kpi-rot-content">
+          <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-2 text-ink-mute dark:text-frost-mute">
+            Data point
+          </p>
+          <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
+            <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : '0'}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
+          </p>
+          <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
+          <p class="kpi-rot-label text-xs font-mono tracking-wide uppercase text-ink-mute dark:text-frost-mute">
+            {firstKpi ? firstKpi.label : ' '}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pool for the rotation script; consumed by the KPI script below -->
+    <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
   </section>
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
@@ -622,9 +622,12 @@ const firstKpi = kpiPool[0];
   }
   .skills-descs { display: none; }
 
+  /* Pull the stage up under the hero and pin it a little below the top, so
+     there is no empty screen between the hero and the skills. */
+  .skills.skills-live { padding-top: 0; padding-bottom: 0; margin-top: -4rem; margin-bottom: -6rem; }
   .skills-live .skills-stage {
-    height: 100svh;
-    min-height: 34rem;
+    height: 84svh;
+    min-height: 32rem;
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: 4rem;
@@ -869,7 +872,7 @@ const firstKpi = kpiPool[0];
         onUpdate: () => render(state.p),
         scrollTrigger: {
           trigger: stage,
-          start: 'top top',
+          start: 'top 9%',
           end: () => `+=${(n - 1) * window.innerHeight * 0.4}`,
           pin: true,
           scrub: 0.4,
