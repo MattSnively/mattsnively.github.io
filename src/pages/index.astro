@@ -26,8 +26,8 @@ const counts = Object.fromEntries(
 const total = projects.length;
 
 /**
- * Stats strip under the hero: one pinned measure (the portfolio itself) plus
- * a single slot that rotates through real, project-sourced metrics. Any project with a `kpi` field joins the rotation and
+ * Data-point ticker fixed to the left edge: rotates through real,
+ * project-sourced metrics. Any project with a `kpi` field joins the rotation and
  * carries its own category hue, so the pool grows as projects are added.
  */
 const kpiPool = projects
@@ -101,6 +101,25 @@ const firstKpi = kpiPool[0];
       </button>
     </div>
   </nav>
+
+  <!-- ─── Data-point ticker ───────────────────────────────────────────────
+       Giant, faint figure cropped by the left edge of the viewport, behind the
+       page content (opaque cards cover it). Rotates through project metrics;
+       the first one is server-rendered so no-JS visitors still see a real
+       number. Desktop only — it would crowd a phone layout. -->
+  <aside
+    class="kpi-ticker"
+    aria-hidden="true"
+    style={firstKpi ? `--hue-l:${firstKpi.hueL}; --hue-d:${firstKpi.hueD};` : undefined}
+  >
+    <p class="kpi-ticker-num font-display font-bold tabular-nums">
+      <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : ''}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
+    </p>
+    <p class="kpi-ticker-label font-mono uppercase">
+      Data point · <span class="kpi-rot-label">{firstKpi ? firstKpi.label : ''}</span>
+    </p>
+    <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
+  </aside>
 
   <!-- ─── Hero ─────────────────────────────────────────────────────────── -->
   <!--
@@ -253,54 +272,6 @@ const firstKpi = kpiPool[0];
         </ol>
       </div>
     </div>
-  </section>
-
-  <!-- ─── Stats strip ─────────────────────────────────────────────────────
-       A pinned measure (the portfolio itself) plus one slot that rotates
-       through project-sourced metrics, each in its project's category hue.
-       Seeded server-side so no-JS visitors see real numbers; the script
-       counts up and starts rotating when the strip scrolls into view. -->
-  <section class="reveal px-6 md:px-12 py-10 max-w-6xl mx-auto w-full">
-    <div class="kpi-panel grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div
-        class="stat-tile stat-featured in rounded-xl p-5"
-        style="--hue-l:#2358a0; --hue-d:#4f86c6;"
-      >
-        <p class="stat-kicker font-mono text-[10px] font-medium tracking-[0.2em] uppercase mb-2">
-          Shipped
-        </p>
-        <p class="gradient-ink font-display text-4xl md:text-5xl font-bold tabular-nums">
-          <span class="kpi-pinned-num" data-target={total}>{total}</span>
-        </p>
-        <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
-        <p class="text-xs font-mono tracking-wide uppercase text-ink-soft dark:text-frost-soft">
-          Projects shipped &amp; counting
-        </p>
-      </div>
-
-      <div
-        class="stat-tile kpi-rotator in rounded-xl p-5
-               bg-white dark:bg-night-900
-               border border-day-200 dark:border-night-700"
-        style={firstKpi ? `--hue-l:${firstKpi.hueL}; --hue-d:${firstKpi.hueD};` : undefined}
-      >
-        <div class="kpi-rot-content">
-          <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-2 text-ink-mute dark:text-frost-mute">
-            Data point
-          </p>
-          <p class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost tabular-nums">
-            <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : '0'}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
-          </p>
-          <span class="stat-rule block h-0.5 w-10 rounded-full my-2.5" aria-hidden="true"></span>
-          <p class="kpi-rot-label text-xs font-mono tracking-wide uppercase text-ink-mute dark:text-frost-mute">
-            {firstKpi ? firstKpi.label : ' '}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pool for the rotation script; consumed by the KPI script below -->
-    <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
   </section>
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
@@ -511,11 +482,11 @@ const firstKpi = kpiPool[0];
   }
 
   /* ── Theme-resolved accent: --hue picks the right surface step ─────── */
-  .role-chip, .stat-tile, .filter-chip, .toolbox-col, .footer-seg {
+  .role-chip, .kpi-ticker, .filter-chip, .toolbox-col, .footer-seg {
     --hue: var(--hue-l);
   }
   :global(.dark) .role-chip,
-  :global(.dark) .stat-tile,
+  :global(.dark) .kpi-ticker,
   :global(.dark) .filter-chip,
   :global(.dark) .toolbox-col,
   :global(.dark) .footer-seg {
@@ -676,61 +647,45 @@ const firstKpi = kpiPool[0];
   .skills-live .skill-body { display: none; }
   .skills-live .skill-row > div { display: block; padding: 0; }
 
-  /* Rotating slot: its content fades out, the metric swaps, then fades back */
-  .kpi-rot-content {
-    transition: opacity 0.35s ease;
-  }
-  .kpi-rotator.swapping .kpi-rot-content {
-    opacity: 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .kpi-rot-content {
-      transition: none;
+  /* ── Data-point ticker ──────────────────────────────────────────────
+     Fixed to the left edge, cropped by it, fading out to the right so it
+     never competes with the hero type. Sits under page content (z-0). */
+  .kpi-ticker { display: none; }
+  @media (min-width: 1024px) {
+    .kpi-ticker {
+      display: block;
+      position: fixed;
+      left: 0;
+      top: 50%;
+      translate: 0 -50%;
+      z-index: 0;
+      pointer-events: none;
+      color: var(--hue);
+      transition: opacity 0.35s ease;
     }
-  }
-
-  /* ── Stat tiles: colored rule grows when the tile reveals ──────────── */
-  .stat-rule {
-    background: var(--hue);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
-  }
-  .stat-tile.in .stat-rule {
-    transform: scaleX(1);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .stat-rule { transform: scaleX(1); }
-  }
-
-  /* Featured tile: an animated gradient border matching the hero name.
-     Two-layer background trick — an opaque tinted fill clipped to the
-     padding box sits over the panning gradient clipped to the border box,
-     so only the 1px border ring shows the moving gradient. The single
-     background-position animation pans both layers, but the fill layer is
-     100% sized so only the gradient ring visibly moves. */
-  .stat-featured {
-    border: 1px solid transparent;
-    background:
-      linear-gradient(
-        color-mix(in srgb, var(--brand-a) 7%, #ffffff),
-        color-mix(in srgb, var(--brand-a) 7%, #ffffff)
-      ) padding-box,
-      var(--brand-grad) border-box;
-    background-size: 100% 100%, 300% 100%;
-    animation: gradient-pan 9s ease-in-out infinite;
-  }
-  :global(.dark) .stat-featured {
-    background:
-      linear-gradient(
-        color-mix(in srgb, var(--brand-a) 9%, theme('colors.night.900')),
-        color-mix(in srgb, var(--brand-a) 9%, theme('colors.night.900'))
-      ) padding-box,
-      var(--brand-grad) border-box;
-    background-size: 100% 100%, 300% 100%;
-  }
-  .stat-kicker {
-    color: var(--hue);
+    .kpi-ticker.swapping { opacity: 0; }
+    .kpi-ticker-num {
+      font-size: min(62svh, 30vw);
+      line-height: 0.8;
+      letter-spacing: -0.04em;
+      margin-left: -0.12em; /* cropped by the viewport edge */
+      opacity: 0.17;
+      -webkit-mask-image: linear-gradient(to right, #000 55%, transparent);
+      mask-image: linear-gradient(to right, #000 55%, transparent);
+    }
+    /* Readable caption running up the left edge */
+    .kpi-ticker-label {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      translate: 0 -50%;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      white-space: nowrap;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      opacity: 0.85;
+    }
   }
 
   /* ── Section rules: hairline wearing the same panning gradient ──────
@@ -975,22 +930,17 @@ const firstKpi = kpiPool[0];
 </script>
 
 <!--
-  Stats strip — count the pinned measure up when the strip scrolls into view,
-  then rotate the single slot through the project-sourced pool. Reduced motion
-  holds on the first metric.
+  Data-point ticker — count each metric up, then rotate through the
+  project-sourced pool. Reduced motion holds on the first metric.
 -->
 <script>
   interface Kpi { value: number; suffix: string; label: string; hueL: string; hueD: string }
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const panel = document.querySelector<HTMLElement>('.kpi-panel');
-  const pinnedNum = document.querySelector<HTMLElement>('.kpi-pinned-num');
-  const rotator = document.querySelector<HTMLElement>('.kpi-rotator');
-  const rotNum = document.querySelector<HTMLElement>('.kpi-rot-num');
-  const rotSuffix = document.querySelector<HTMLElement>('.kpi-rot-suffix');
-  const rotLabel = document.querySelector<HTMLElement>('.kpi-rot-label');
-
+  const ticker = document.querySelector<HTMLElement>('.kpi-ticker');
+  const num = document.querySelector<HTMLElement>('.kpi-rot-num');
+  const suffix = document.querySelector<HTMLElement>('.kpi-rot-suffix');
+  const label = document.querySelector<HTMLElement>('.kpi-rot-label');
   const poolEl = document.getElementById('kpi-pool');
   const pool: Kpi[] = poolEl ? JSON.parse(poolEl.textContent || '[]') : [];
 
@@ -1004,51 +954,36 @@ const firstKpi = kpiPool[0];
     const start = performance.now();
     function tick(now: number) {
       const t = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
-      el.textContent = Math.round(target * eased).toLocaleString();
+      el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3))).toLocaleString(); // cubic ease-out
       if (t < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   }
 
   let idx = 0;
-  /** Paint pool[i] into the rotating slot: hue, suffix, label, and count-up */
   function applyKpi(i: number) {
     const k = pool[i];
-    if (!k || !rotator || !rotNum || !rotSuffix || !rotLabel) return;
-    rotator.style.setProperty('--hue-l', k.hueL);
-    rotator.style.setProperty('--hue-d', k.hueD);
-    rotSuffix.textContent = k.suffix;
-    rotLabel.textContent = k.label;
-    countUp(rotNum, k.value);
+    if (!k || !ticker || !num || !suffix || !label) return;
+    ticker.style.setProperty('--hue-l', k.hueL);
+    ticker.style.setProperty('--hue-d', k.hueD);
+    suffix.textContent = k.suffix;
+    label.textContent = k.label;
+    countUp(num, k.value);
   }
 
-  function startRotation() {
-    window.setInterval(() => {
-      rotator?.classList.add('swapping'); // fade content out
-      window.setTimeout(() => {
-        idx = (idx + 1) % pool.length;
-        applyKpi(idx);
-        rotator?.classList.remove('swapping'); // fade the new metric in
-      }, 350);
-    }, 4200);
-  }
-
-  function revealPanel() {
-    if (pinnedNum) countUp(pinnedNum, Number(pinnedNum.dataset.target ?? '0'));
-    if (pool.length) applyKpi(0);
-    if (!reduceMotion && pool.length > 1) startRotation();
-  }
-
-  // Start counting when the strip first scrolls into view (it sits below the fold).
-  if (panel) {
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        io.disconnect();
-        revealPanel();
-      }
-    }, { threshold: 0.4 });
-    io.observe(panel);
+  if (ticker && pool.length) {
+    applyKpi(0);
+    if (!reduceMotion && pool.length > 1) {
+      window.setInterval(() => {
+        if (document.hidden) return;
+        ticker.classList.add('swapping'); // fade out, swap, fade in
+        window.setTimeout(() => {
+          idx = (idx + 1) % pool.length;
+          applyKpi(idx);
+          ticker.classList.remove('swapping');
+        }, 350);
+      }, 4200);
+    }
   }
 </script>
 
