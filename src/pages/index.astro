@@ -245,45 +245,60 @@ const firstKpi = kpiPool[0];
   </section>
 
   <!-- ─── Skills ───────────────────────────────────────────────────────────
-       One tall row per skill. The script draws each row's rule, slides its
-       title up out of a mask and fades the body in; while scrolling, the row
-       nearest the viewport centre stays at full strength and the rest dim.
-       Without JS or under reduced motion it is a plain, fully readable list. -->
+       Wide screens with motion: the stage pins and scrolling steps through the
+       skills. The big list sits on the right (active title sharp, the rest
+       fading and blurring away) while its description shows on the left.
+       Otherwise (no JS, reduced motion, narrow screens) it is a plain list
+       where every skill carries its own description. -->
   <section id="skills" class="skills px-6 md:px-12 py-16 max-w-6xl mx-auto w-full">
-    <p class="font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute mb-3">
-      {skills.label}
-    </p>
-    <div class="flex items-center gap-5 mb-10">
-      <h2 class="font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost">
-        {skills.heading}
-      </h2>
-      <span class="section-rule flex-1 h-px" aria-hidden="true"></span>
-    </div>
-
-    <ol>
-      {skills.rows.map((row, i) => (
-        <li class="skill-row">
-          <span class="skill-rule block h-px" aria-hidden="true"></span>
-          <div class="grid grid-cols-1 md:grid-cols-[4.5rem_minmax(0,1.7fr)_minmax(0,1fr)] gap-x-8 gap-y-4 py-8 md:py-12 md:items-start">
-            <span class="skill-num font-mono text-xs tracking-widest tabular-nums md:pt-5">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <h3 class="skill-title font-display font-bold uppercase text-ink dark:text-frost">
-              <span class="skill-title-inner inline-block">{row.title}</span>
-            </h3>
-            <div class="skill-body md:pt-3">
-              <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-4">
+    <div class="skills-stage">
+      <div class="skills-left">
+        <p class="font-mono text-[11px] tracking-[0.2em] uppercase text-ink-mute dark:text-frost-mute mb-3">
+          {skills.label}
+        </p>
+        <h2 class="skills-heading font-display text-3xl md:text-4xl font-bold text-ink dark:text-frost mb-10">
+          {skills.heading}
+        </h2>
+        <div class="skills-descs">
+          {skills.rows.map((row) => (
+            <div class="skills-desc">
+              <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-5">
                 {row.description}
               </p>
-              <ul class="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] tracking-wide uppercase text-ink-mute dark:text-frost-mute">
+              <ul class="skills-tools flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] tracking-wide uppercase text-ink-mute dark:text-frost-mute">
                 {row.tools.map((t) => <li>{t}</li>)}
               </ul>
             </div>
-          </div>
-        </li>
-      ))}
-      <li class="skill-row" aria-hidden="true"><span class="skill-rule block h-px"></span></li>
-    </ol>
+          ))}
+        </div>
+      </div>
+
+      <div class="skills-right">
+        <ol class="skills-list">
+          {skills.rows.map((row, i) => (
+            <li class="skill-row">
+              <span class="skill-rule block h-px" aria-hidden="true"></span>
+              <div class="grid grid-cols-1 md:grid-cols-[4.5rem_minmax(0,1fr)] gap-x-8 gap-y-4 py-8 md:items-start">
+                <span class="skill-num font-mono text-xs tracking-widest tabular-nums md:pt-5">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 class="skill-title font-display font-bold uppercase text-ink dark:text-frost">{row.title}</h3>
+                  <div class="skill-body mt-3">
+                    <p class="text-base md:text-lg leading-snug text-ink-soft dark:text-frost-soft mb-4">
+                      {row.description}
+                    </p>
+                    <ul class="flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] tracking-wide uppercase text-ink-mute dark:text-frost-mute">
+                      {row.tools.map((t) => <li>{t}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
   </section>
 
   <!-- ─── Projects ──────────────────────────────────────────────────────── -->
@@ -592,34 +607,61 @@ const firstKpi = kpiPool[0];
     }
   }
 
-  /* ── Skills rows ────────────────────────────────────────────────────── */
-  .skill-rule { background: theme('colors.day.200'); transform-origin: left; }
+  /* ── Skills ─────────────────────────────────────────────────────────
+     Default = stacked list with each skill's own description (.skills-descs
+     hidden). .skills-live (added by the script on wide, motion-OK screens)
+     switches to the pinned two-column stepper. */
+  .skill-rule { background: theme('colors.day.200'); }
   :global(.dark) .skill-rule { background: theme('colors.night.700'); }
   .skill-num { color: var(--brand-a); }
+  .skills { --skill-fs: clamp(2.5rem, 5vw, 4.5rem); }
   .skill-title {
-    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    font-size: var(--skill-fs);
     line-height: 0.95;
     letter-spacing: -0.02em;
-    /* Mask for the slide-up: clips top/bottom only, so an over-long title
-       spills sideways instead of being cut off mid-letter. */
-    clip-path: inset(0 -100vw);
-    padding-bottom: 0.05em;
   }
-  .skill-title { transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-  .skill-title-inner { transition: color 0.25s ease; }
-  @media (hover: hover) {
-    /* The nudge sits on the mask wrapper: GSAP writes `translate: none` inline on
-     the element it tweens (.skill-title-inner), which would override a hover
-     rule placed there. */
-    .skill-row:hover .skill-title { translate: 14px 0; }
-    .skill-row:hover .skill-title-inner { color: var(--brand-a); }
+  .skills-descs { display: none; }
+
+  .skills-live .skills-stage {
+    height: 100svh;
+    min-height: 34rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 4rem;
+    align-items: center;
   }
-  /* Dimming only exists once the script has taken over (.skills-live), so a
-     failed bundle or reduced motion never leaves rows greyed out. */
-  .skills-live .skill-row { transition: opacity 0.4s ease; opacity: 0.32; }
-  .skills-live .skill-row[data-active],
-  .skills-live .skill-row:hover,
-  .skills-live .skill-row:focus-within { opacity: 1; }
+  .skills-live .skills-left { text-align: right; }
+  .skills-live .skills-heading {
+    font-size: clamp(2rem, 3.4vw, 3.25rem);
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--brand-a);
+  }
+  .skills-live .skills-descs { display: grid; }
+  .skills-live .skills-tools { justify-content: flex-end; }
+  .skills-live .skills-desc {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .skills-live .skills-desc[data-active] { opacity: 1; }
+
+  /* Right column: a window onto the list; the script slides the list up so
+     the active title stays on a fixed line near the top of the window. */
+  .skills-live .skills-right {
+    position: relative;
+    height: 74svh;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 85%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 85%, transparent);
+  }
+  .skills-live .skills-list { position: absolute; top: 26%; left: 0; right: 0; }
+  .skills-live .skill-row { height: calc(var(--skill-fs) * 1.25); }
+  .skills-live .skill-title { white-space: nowrap; line-height: 1.25; }
+  .skills-live .skill-rule,
+  .skills-live .skill-num,
+  .skills-live .skill-body { display: none; }
+  .skills-live .skill-row > div { display: block; padding: 0; }
 
   /* Rotating slot: its content fades out, the metric swaps, then fades back */
   .kpi-rot-content {
@@ -788,44 +830,68 @@ const firstKpi = kpiPool[0];
 </script>
 
 <!--
-  Skills motion. Per row: rule draws left→right, title slides up out of its
-  mask, body rises in (once, as the row enters). Separately, the row crossing
-  the middle band of the viewport is marked data-active; CSS dims the others.
+  Skills motion (wide screens, motion allowed). The stage pins while a scrubbed
+  progress value p runs 0 → n-1; the list slides up by p rows, titles blur and
+  fade with distance from p, and the description for round(p) shows on the
+  left. matchMedia reverts everything if the viewport or motion setting flips.
 -->
 <script>
-  import { gsap, ScrollTrigger, whenMotionOk } from '../lib/motion';
+  import { gsap } from '../lib/motion';
 
-  whenMotionOk(() => {
-    const section = document.getElementById('skills');
-    if (!section) return;
-    section.classList.add('skills-live');
+  const section = document.getElementById('skills');
+  if (section) {
+    gsap.matchMedia().add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      section.classList.add('skills-live');
+      const stage = section.querySelector<HTMLElement>('.skills-stage')!;
+      const list = section.querySelector<HTMLElement>('.skills-list')!;
+      const items = [...section.querySelectorAll<HTMLElement>('.skill-row')];
+      const descs = [...section.querySelectorAll<HTMLElement>('.skills-desc')];
+      const n = items.length;
+      let rowH = items[0].offsetHeight;
 
-    section.querySelectorAll<HTMLElement>('.skill-row').forEach((row) => {
-      const rule = row.querySelector('.skill-rule');
-      const title = row.querySelector('.skill-title-inner');
-      const body = row.querySelector('.skill-body');
-      const num = row.querySelector('.skill-num');
+      const render = (p: number) => {
+        gsap.set(list, { y: -p * rowH });
+        const active = Math.round(p);
+        items.forEach((el, i) => {
+          const t = Math.min(Math.abs(i - p) / 2.2, 1);
+          el.style.opacity = String(1 - 0.78 * t);
+          el.style.filter = t < 0.04 ? '' : `blur(${(t * 7).toFixed(1)}px)`;
+          el.toggleAttribute('data-active', i === active);
+        });
+        descs.forEach((el, i) => el.toggleAttribute('data-active', i === active));
+      };
 
-      const tl = gsap.timeline({
-        defaults: { ease: 'power4.out' },
-        scrollTrigger: { trigger: row, start: 'top 85%', once: true },
+      const state = { p: 0 };
+      render(0);
+      gsap.to(state, {
+        p: n - 1,
+        ease: 'none',
+        onUpdate: () => render(state.p),
+        scrollTrigger: {
+          trigger: stage,
+          start: 'top top',
+          end: () => `+=${(n - 1) * window.innerHeight * 0.55}`,
+          pin: true,
+          scrub: 0.4,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            rowH = items[0].offsetHeight;
+            render(state.p);
+          },
+        },
       });
-      tl.from(rule, { scaleX: 0, duration: 1.1, ease: 'power3.inOut' });
-      if (title) tl.from(title, { yPercent: 110, duration: 0.9 }, 0.15);
-      if (num) tl.from(num, { opacity: 0, x: -10, duration: 0.6 }, 0.25);
-      if (body) tl.from(body, { y: 24, opacity: 0, duration: 0.8 }, 0.35);
 
-      ScrollTrigger.create({
-        trigger: row,
-        start: 'top 62%',
-        end: 'bottom 38%',
-        onToggle: (self) => row.toggleAttribute('data-active', self.isActive),
-      });
+      return () => {
+        section.classList.remove('skills-live');
+        items.forEach((el) => {
+          el.style.opacity = '';
+          el.style.filter = '';
+          el.removeAttribute('data-active');
+        });
+        gsap.set(list, { clearProps: 'all' });
+      };
     });
-
-    // Cleanup runs if the visitor flips reduced-motion mid-session.
-    return () => section.classList.remove('skills-live');
-  });
+  }
 </script>
 
 <!--
