@@ -614,7 +614,7 @@ const firstKpi = kpiPool[0];
   .skill-rule { background: theme('colors.day.200'); }
   :global(.dark) .skill-rule { background: theme('colors.night.700'); }
   .skill-num { color: var(--brand-a); }
-  .skills { --skill-fs: clamp(2.5rem, 5vw, 4.5rem); }
+  .skills { --skill-fs: clamp(2.75rem, 6.2vw, 6.5rem); }
   .skill-title {
     font-size: var(--skill-fs);
     line-height: 0.95;
@@ -626,13 +626,13 @@ const firstKpi = kpiPool[0];
     height: 100svh;
     min-height: 34rem;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: 4rem;
     align-items: center;
   }
   .skills-live .skills-left { text-align: right; }
   .skills-live .skills-heading {
-    font-size: clamp(2rem, 3.4vw, 3.25rem);
+    font-size: clamp(1.75rem, 2.9vw, 2.75rem);
     line-height: 1;
     text-transform: uppercase;
     color: var(--brand-a);
@@ -870,7 +870,7 @@ const firstKpi = kpiPool[0];
         scrollTrigger: {
           trigger: stage,
           start: 'top top',
-          end: () => `+=${(n - 1) * window.innerHeight * 0.55}`,
+          end: () => `+=${(n - 1) * window.innerHeight * 0.4}`,
           pin: true,
           scrub: 0.4,
           invalidateOnRefresh: true,

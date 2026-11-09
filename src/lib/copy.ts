@@ -24,7 +24,7 @@ export const hero = {
 
 export const skills = {
   /** TEXT SLOT 5 — small label above the section heading. */
-  label: 'What I do',
+  label: 'Skills and Roles',
 
   /** TEXT SLOT 6 — section heading. */
   heading: 'What I like to do',
