@@ -27,7 +27,7 @@ export const skills = {
   label: 'What I do',
 
   /** TEXT SLOT 6 — section heading. */
-  heading: 'Skills & Roles',
+  heading: 'What I like to do',
 
   /** TEXT SLOT 7 — one entry per row (5–6 reads best; any count works).
    *  title: 1–3 words, shown huge and uppercase (keep each word ≤ ~10 letters).
