@@ -678,15 +678,16 @@ const firstKpi = kpiPool[0];
     /* Readable caption running up the left edge */
     .kpi-ticker-label {
       position: absolute;
-      left: 14px;
+      left: 16px;
       top: 50%;
       translate: 0 -50%;
       writing-mode: vertical-rl;
       transform: rotate(180deg);
       white-space: nowrap;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      opacity: 0.85;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      opacity: 1;
     }
   }
 
@@ -975,7 +976,7 @@ const firstKpi = kpiPool[0];
 
   /** Count-up duration (ms) plus how long each number then holds before swapping */
   const COUNT_MS = 1100;
-  const HOLD_MS = 3000;
+  const HOLD_MS = 5000;
 
   function scheduleNext() {
     window.setTimeout(() => {
