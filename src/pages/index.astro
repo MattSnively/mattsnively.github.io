@@ -116,7 +116,7 @@ const firstKpi = kpiPool[0];
       <span class="kpi-rot-num">{firstKpi ? firstKpi.value.toLocaleString() : ''}</span><span class="kpi-rot-suffix">{firstKpi ? firstKpi.suffix : ''}</span>
     </p>
     <p class="kpi-ticker-label font-mono uppercase">
-      Data point · <span class="kpi-rot-label">{firstKpi ? firstKpi.label : ''}</span>
+      <span class="kpi-rot-label">{firstKpi ? firstKpi.label : ''}</span>
     </p>
     <script type="application/json" id="kpi-pool" is:inline set:html={JSON.stringify(kpiPool)}></script>
   </aside>
