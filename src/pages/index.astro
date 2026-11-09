@@ -661,9 +661,11 @@ const firstKpi = kpiPool[0];
       z-index: 0;
       pointer-events: none;
       color: var(--hue);
-      transition: opacity 0.35s ease;
+      opacity: 0; /* stays hidden until the Projects section scrolls in (.shown) */
+      transition: opacity 0.5s ease;
     }
-    .kpi-ticker.swapping { opacity: 0; }
+    .kpi-ticker.shown { opacity: 1; }
+    .kpi-ticker.shown.swapping { opacity: 0; transition-duration: 0.35s; }
     .kpi-ticker-num {
       font-size: min(62svh, 30vw);
       line-height: 0.8;
@@ -986,6 +988,17 @@ const firstKpi = kpiPool[0];
         scheduleNext();
       }, 350);
     }, COUNT_MS + HOLD_MS);
+  }
+
+  // Reveal once the Projects heading reaches the lower part of the viewport,
+  // so the ticker never shows over the hero or the pinned skills section.
+  const work = document.getElementById('work');
+  if (ticker && work) {
+    const update = () =>
+      ticker.classList.toggle('shown', work.getBoundingClientRect().top < window.innerHeight * 0.75);
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   }
 
   if (ticker && pool.length) {
