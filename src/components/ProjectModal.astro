@@ -698,6 +698,20 @@ const first = detail.gallery?.[0];
     });
   });
 
+  // The custom cursor promises "Open" across the whole card, so clicks on the
+  // card body (title, description, tags) forward to the card's trigger.
+  // Real controls keep their own behavior; keyboard users already have the
+  // trigger buttons, so this is pointer-only sugar.
+  document.querySelectorAll<HTMLElement>('.project-card').forEach((card) => {
+    const trigger = card.querySelector<HTMLElement>('[data-modal-open]');
+    if (!trigger) return;
+    card.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a, button, [role="button"], summary')) return;
+      if (window.getSelection()?.toString()) return; // don't hijack text selection
+      trigger.click();
+    });
+  });
+
   document.querySelectorAll<HTMLDialogElement>('dialog.project-modal').forEach((dialog) => {
     // Close via the ✕ button
     dialog.querySelector('[data-modal-close]')?.addEventListener('click', () => dialog.close());
